@@ -3,3 +3,19 @@
   gap: 30px;
   flex-wrap: wrap;
 }
+
+.error {
+  border: 1px solid red;
+}
+
+.errorMessage {
+  color: red;
+}
+
+.active {
+  background-color: lightblue;
+}
+
+.done {
+  opacity: 0.5;
+}
