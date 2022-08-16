@@ -1,12 +1,17 @@
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 
-type TodolistType = {
-  title: string;
+type TodolistPropsType = TodolistType & {
   tasks: TaskType[];
-  removeTask: (id: string) => void;
-  changeFilter: (filterValue: FilterValuesType) => void;
-  addTask: (newTaskTitle: string) => void;
-  changeTaskStatus: (id: string, isDone: boolean) => void;
+  removeTask: (id: string, todolistId: string) => void;
+  changeFilter: (filterValue: FilterValuesType, todolistId: string) => void;
+  addTask: (newTaskTitle: string, todolistId: string) => void;
+  changeTaskStatus: (id: string, isDone: boolean, todolistId: string) => void;
+  removeTodolist: (todolistId: string) => void;
+};
+
+export type TodolistType = {
+  id: string;
+  title: string;
   filter: FilterValuesType;
 };
 
@@ -18,10 +23,9 @@ export type TaskType = {
 
 export type FilterValuesType = "all" | "active" | "completed";
 
-export function Todolist(props: TodolistType) {
+export function Todolist(props: TodolistPropsType) {
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [error, setError] = useState<null | string>(null);
-  const [addTaskElementsFocus, setAddTaskElementsFocus] = useState(false);
 
   const addTask = () => {
     const clearNewTaskTitle = newTaskTitle.trim();
@@ -32,7 +36,7 @@ export function Todolist(props: TodolistType) {
       return;
     }
 
-    props.addTask(newTaskTitle);
+    props.addTask(newTaskTitle, props.id);
     setNewTaskTitle("");
   };
 
@@ -52,27 +56,33 @@ export function Todolist(props: TodolistType) {
   };
 
   const onRemoveTaskClickHandler = (taskId: string) => {
-    props.removeTask(taskId);
+    props.removeTask(taskId, props.id);
   };
 
   const onTasksFilterChangeHandler = (filterValue: FilterValuesType) => {
-    props.changeFilter(filterValue);
+    props.changeFilter(filterValue, props.id);
   };
 
   const onTaskStatusChangeClickHandler = (
     e: ChangeEvent<HTMLInputElement>,
     id: string
   ) => {
-    props.changeTaskStatus(id, e.currentTarget.checked);
+    props.changeTaskStatus(id, e.currentTarget.checked, props.id);
   };
 
   const onAddTaskElementsBlurHandler = () => {
     setError(null);
   };
 
+  const removeTodolistHandler = () => {
+    props.removeTodolist(props.id);
+  };
+
   return (
     <div>
-      <h3>{props.title}</h3>
+      <h3>
+        {props.title} <button onClick={removeTodolistHandler}>x</button>
+      </h3>
       <div>
         <input
           type="text"
