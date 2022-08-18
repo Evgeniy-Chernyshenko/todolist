@@ -1,4 +1,6 @@
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent } from "react";
+import { AddItemForm } from "./AddItemForm";
+import { Editable } from "./Editable";
 
 type TodolistPropsType = TodolistType & {
   tasks: TaskType[];
@@ -7,6 +9,8 @@ type TodolistPropsType = TodolistType & {
   addTask: (newTaskTitle: string, todolistId: string) => void;
   changeTaskStatus: (id: string, isDone: boolean, todolistId: string) => void;
   removeTodolist: (todolistId: string) => void;
+  changeTaskTitle: (title: string, taskId: string, todolistId: string) => void;
+  changeTodolistTitle: (title: string, todolistId: string) => void;
 };
 
 export type TodolistType = {
@@ -24,37 +28,6 @@ export type TaskType = {
 export type FilterValuesType = "all" | "active" | "completed";
 
 export function Todolist(props: TodolistPropsType) {
-  const [newTaskTitle, setNewTaskTitle] = useState("");
-  const [error, setError] = useState<null | string>(null);
-
-  const addTask = () => {
-    const clearNewTaskTitle = newTaskTitle.trim();
-
-    if (!clearNewTaskTitle) {
-      setError("Field is required");
-
-      return;
-    }
-
-    props.addTask(newTaskTitle, props.id);
-    setNewTaskTitle("");
-  };
-
-  const onNewTaskTitleChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setError(null);
-    setNewTaskTitle(e.currentTarget.value);
-  };
-
-  const onNewTaskTitleKeyPressHandler = (
-    e: KeyboardEvent<HTMLInputElement>
-  ) => {
-    e.code === "Enter" && addTask();
-  };
-
-  const onAddTaskClickHandler = () => {
-    addTask();
-  };
-
   const onRemoveTaskClickHandler = (taskId: string) => {
     props.removeTask(taskId, props.id);
   };
@@ -70,48 +43,41 @@ export function Todolist(props: TodolistPropsType) {
     props.changeTaskStatus(id, e.currentTarget.checked, props.id);
   };
 
-  const onAddTaskElementsBlurHandler = () => {
-    setError(null);
-  };
-
   const removeTodolistHandler = () => {
     props.removeTodolist(props.id);
   };
 
+  const addTask = (title: string) => props.addTask(title, props.id);
+
+  const changeTodolistTitle = (title: string) =>
+    props.changeTodolistTitle(title, props.id);
+
   return (
     <div>
       <h3>
-        {props.title} <button onClick={removeTodolistHandler}>x</button>
+        <Editable title={props.title} onChange={changeTodolistTitle} />
+        <button onClick={removeTodolistHandler}>x</button>
       </h3>
-      <div>
-        <input
-          type="text"
-          className={error ? "error" : ""}
-          value={newTaskTitle}
-          onChange={onNewTaskTitleChangeHandler}
-          onKeyPress={onNewTaskTitleKeyPressHandler}
-          onBlur={() => onAddTaskElementsBlurHandler()}
-        />
-        <button
-          onClick={onAddTaskClickHandler}
-          onBlur={() => onAddTaskElementsBlurHandler()}
-        >
-          +
-        </button>
-        {error && <div className="errorMessage">{error}</div>}
-      </div>
+      <AddItemForm onAddItem={addTask} />
       <ul>
-        {props.tasks.map((task) => (
-          <li key={task.id} className={task.isDone ? "done" : ""}>
-            <input
-              type="checkbox"
-              checked={task.isDone}
-              onChange={(e) => onTaskStatusChangeClickHandler(e, task.id)}
-            />
-            <span>{task.title}</span>
-            <button onClick={() => onRemoveTaskClickHandler(task.id)}>x</button>
-          </li>
-        ))}
+        {props.tasks.map((task) => {
+          const changeTaskTitleHandler = (title: string) =>
+            props.changeTaskTitle(title, task.id, props.id);
+
+          return (
+            <li key={task.id} className={task.isDone ? "done" : ""}>
+              <input
+                type="checkbox"
+                checked={task.isDone}
+                onChange={(e) => onTaskStatusChangeClickHandler(e, task.id)}
+              />
+              <Editable title={task.title} onChange={changeTaskTitleHandler} />
+              <button onClick={() => onRemoveTaskClickHandler(task.id)}>
+                x
+              </button>
+            </li>
+          );
+        })}
       </ul>
       <div>
         <button
