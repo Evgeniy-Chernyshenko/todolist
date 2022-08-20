@@ -1,3 +1,19 @@
+import { Delete, DeleteOutline } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Card,
+  CardContent,
+  Checkbox,
+  Divider,
+  FormControlLabel,
+  IconButton,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
 import { ChangeEvent } from "react";
 import { AddItemForm } from "./AddItemForm";
 import { Editable } from "./Editable";
@@ -53,52 +69,104 @@ export function Todolist(props: TodolistPropsType) {
     props.changeTodolistTitle(title, props.id);
 
   return (
-    <div>
-      <h3>
-        <Editable title={props.title} onChange={changeTodolistTitle} />
-        <button onClick={removeTodolistHandler}>x</button>
-      </h3>
-      <AddItemForm onAddItem={addTask} />
-      <ul>
-        {props.tasks.map((task) => {
-          const changeTaskTitleHandler = (title: string) =>
-            props.changeTaskTitle(title, task.id, props.id);
+    <Grid xs={12} md={6} lg={4}>
+      <Card sx={{ height: "100%" }}>
+        <CardContent
+          sx={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <Typography
+              component="div"
+              variant="h5"
+              sx={{
+                display: "flex",
+                gap: 1,
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Editable title={props.title} onChange={changeTodolistTitle} />
+              <IconButton
+                aria-label="delete todolist"
+                onClick={removeTodolistHandler}
+              >
+                <Delete />
+              </IconButton>
+            </Typography>
+            <AddItemForm onAddItem={addTask} label="New task title" />
+            <List sx={{ mt: 2, mb: 2 }}>
+              {props.tasks.map((task, i, tasks) => {
+                const changeTaskTitleHandler = (title: string) =>
+                  props.changeTaskTitle(title, task.id, props.id);
 
-          return (
-            <li key={task.id} className={task.isDone ? "done" : ""}>
-              <input
-                type="checkbox"
-                checked={task.isDone}
-                onChange={(e) => onTaskStatusChangeClickHandler(e, task.id)}
-              />
-              <Editable title={task.title} onChange={changeTaskTitleHandler} />
-              <button onClick={() => onRemoveTaskClickHandler(task.id)}>
-                x
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      <div>
-        <button
-          className={props.filter === "all" ? "active" : ""}
-          onClick={() => onTasksFilterChangeHandler("all")}
-        >
-          All
-        </button>
-        <button
-          className={props.filter === "active" ? "active" : ""}
-          onClick={() => onTasksFilterChangeHandler("active")}
-        >
-          Active
-        </button>
-        <button
-          className={props.filter === "completed" ? "active" : ""}
-          onClick={() => onTasksFilterChangeHandler("completed")}
-        >
-          Completed
-        </button>
-      </div>
-    </div>
+                return (
+                  <>
+                    <ListItem
+                      disablePadding
+                      key={task.id}
+                      className={task.isDone ? "done" : ""}
+                      sx={{ gap: 1, p: 0.5 }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <Checkbox
+                          checked={task.isDone}
+                          onChange={(e) =>
+                            onTaskStatusChangeClickHandler(e, task.id)
+                          }
+                        />
+                        <Editable
+                          title={task.title}
+                          onChange={changeTaskTitleHandler}
+                        />
+                      </Box>
+                      <IconButton
+                        aria-label="delete task"
+                        onClick={() => onRemoveTaskClickHandler(task.id)}
+                      >
+                        <DeleteOutline />
+                      </IconButton>
+                    </ListItem>
+                    {i < tasks.length - 1 && <Divider />}
+                  </>
+                );
+              })}
+            </List>
+          </div>
+          <ButtonGroup variant="outlined" fullWidth color="info">
+            <Button
+              variant={props.filter === "all" ? "contained" : "outlined"}
+              onClick={() => onTasksFilterChangeHandler("all")}
+            >
+              All
+            </Button>
+            <Button
+              variant={props.filter === "active" ? "contained" : "outlined"}
+              onClick={() => onTasksFilterChangeHandler("active")}
+            >
+              Active
+            </Button>
+            <Button
+              variant={props.filter === "completed" ? "contained" : "outlined"}
+              onClick={() => onTasksFilterChangeHandler("completed")}
+            >
+              Completed
+            </Button>
+          </ButtonGroup>
+        </CardContent>
+      </Card>
+    </Grid>
   );
 }

@@ -1,7 +1,10 @@
+import { Add } from "@mui/icons-material";
+import { Box, IconButton, TextField } from "@mui/material";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 type PropsType = {
   onAddItem: (value: string) => void;
+  label: string;
 };
 
 export function AddItemForm(props: PropsType) {
@@ -21,6 +24,8 @@ export function AddItemForm(props: PropsType) {
   };
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
+    setError(null);
+
     setValue(e.currentTarget.value);
   };
 
@@ -37,19 +42,26 @@ export function AddItemForm(props: PropsType) {
   };
 
   return (
-    <div>
-      <input
-        type="text"
-        className={error ? "error" : ""}
+    <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
+      <TextField
         value={value}
         onChange={onChangeHandler}
         onKeyPress={onKeyPressHandler}
         onBlur={onBlurHandler}
+        label={props.label}
+        variant="outlined"
+        size="small"
+        error={!!error}
+        helperText={error ? error : ""}
+        fullWidth
       />
-      <button onClick={onButtonClickHandler} onBlur={onBlurHandler}>
-        +
-      </button>
-      {error && <div className="errorMessage">{error}</div>}
-    </div>
+      <IconButton
+        aria-label="add task"
+        onClick={onButtonClickHandler}
+        onBlur={onBlurHandler}
+      >
+        <Add />
+      </IconButton>
+    </Box>
   );
 }

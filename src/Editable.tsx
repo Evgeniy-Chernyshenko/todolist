@@ -1,3 +1,4 @@
+import { Box, TextField, Typography } from "@mui/material";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 type PropsType = {
@@ -35,14 +36,21 @@ export function Editable(props: PropsType) {
   };
 
   return isEditMode ? (
-    <input
+    <TextField
       value={value}
       onChange={onChangeTitleHandler}
       autoFocus
       onBlur={activateViewMode}
       onKeyPress={onKeyPressHandler}
+      variant="standard"
+      fullWidth
     />
   ) : (
-    <span onDoubleClick={activateEditMode}>{value}</span>
+    <Typography
+      onDoubleClick={activateEditMode}
+      sx={{ wordBreak: "break-word" }}
+    >
+      {value}
+    </Typography>
   );
 }

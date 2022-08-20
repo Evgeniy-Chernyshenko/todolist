@@ -1,3 +1,16 @@
+import {
+  AppBar,
+  Button,
+  Container,
+  createTheme,
+  CssBaseline,
+  IconButton,
+  ThemeProvider,
+  Toolbar,
+  Typography,
+} from "@mui/material";
+import Grid from "@mui/material/Unstable_Grid2";
+import { DarkMode, LightMode, Menu } from "@mui/icons-material";
 import { useState } from "react";
 import { v1 } from "uuid";
 import { AddItemForm } from "./AddItemForm";
@@ -10,6 +23,7 @@ const todolist1Id = v1();
 const todolist2Id = v1();
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [todolists, setTodolists] = useState<TodolistType[]>([
     { id: todolist1Id, title: "What to learn", filter: "all" },
     { id: todolist2Id, title: "What to buy", filter: "all" },
@@ -102,40 +116,77 @@ function App() {
     );
   };
 
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+  });
+
   return (
-    <div className="App">
-      <AddItemForm onAddItem={addTodolist} />
-      {todolists.map((todolist) => {
-        const filteredTasks = tasks[todolist.id].filter((task) => {
-          if (todolist.filter === "completed") {
-            return task.isDone;
-          }
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <Menu />
+          </IconButton>
+          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            Todolist app
+          </Typography>
+          <Button color="inherit">Login</Button>
+          <IconButton
+            color="inherit"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+          >
+            {isDarkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Container sx={{ pt: 4 }}>
+        <Grid container spacing={4}>
+          <Grid xs={12}>
+            <AddItemForm onAddItem={addTodolist} label="New todolist title" />
+          </Grid>
 
-          if (todolist.filter === "active") {
-            return !task.isDone;
-          }
+          {todolists.map((todolist) => {
+            const filteredTasks = tasks[todolist.id].filter((task) => {
+              if (todolist.filter === "completed") {
+                return task.isDone;
+              }
 
-          return true;
-        });
+              if (todolist.filter === "active") {
+                return !task.isDone;
+              }
 
-        return (
-          <Todolist
-            key={todolist.id}
-            id={todolist.id}
-            title={todolist.title}
-            tasks={filteredTasks}
-            filter={todolist.filter}
-            removeTask={removeTask}
-            changeFilter={changeFilter}
-            addTask={addTask}
-            changeTaskStatus={changeTaskStatus}
-            removeTodolist={removeTodolist}
-            changeTaskTitle={changeTaskTitle}
-            changeTodolistTitle={changeTodolistTitle}
-          />
-        );
-      })}
-    </div>
+              return true;
+            });
+
+            return (
+              <Todolist
+                key={todolist.id}
+                id={todolist.id}
+                title={todolist.title}
+                tasks={filteredTasks}
+                filter={todolist.filter}
+                removeTask={removeTask}
+                changeFilter={changeFilter}
+                addTask={addTask}
+                changeTaskStatus={changeTaskStatus}
+                removeTodolist={removeTodolist}
+                changeTaskTitle={changeTaskTitle}
+                changeTodolistTitle={changeTodolistTitle}
+              />
+            );
+          })}
+        </Grid>
+      </Container>
+    </ThemeProvider>
   );
 }
 
