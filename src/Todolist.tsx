@@ -7,7 +7,6 @@ import {
   CardContent,
   Checkbox,
   Divider,
-  FormControlLabel,
   IconButton,
   List,
   ListItem,

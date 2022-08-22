@@ -1,4 +1,4 @@
-import { Box, TextField, Typography } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 type PropsType = {
