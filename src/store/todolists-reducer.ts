@@ -1,12 +1,12 @@
 import { v1 } from "uuid";
 import { FilterValuesType, TodolistType } from "../Todolist";
 
-type ActionsKeys = keyof typeof actions;
-type ActionsType = ReturnType<typeof actions[ActionsKeys]>;
+type ActionKeys = keyof typeof actions;
+type ActionType = ReturnType<typeof actions[ActionKeys]>;
 
 export const todolistReducer = (
   state: TodolistType[],
-  action: ActionsType
+  action: ActionType
 ): TodolistType[] => {
   switch (action.type) {
     case "REMOVE_TODOLIST": {
@@ -14,7 +14,7 @@ export const todolistReducer = (
     }
 
     case "ADD_TODOLIST": {
-      return [...state, { id: v1(), title: action.title, filter: "all" }];
+      return [...state, { id: action.id, title: action.title, filter: "all" }];
     }
 
     case "CHANGE_TODOLIST_TITLE": {
@@ -35,9 +35,13 @@ export const todolistReducer = (
   }
 };
 
-const actions = {
+export const actions = {
   removeTodolist: (id: string) => ({ type: "REMOVE_TODOLIST" as const, id }),
-  addTodolist: (title: string) => ({ type: "ADD_TODOLIST" as const, title }),
+  addTodolist: (title: string) => ({
+    type: "ADD_TODOLIST" as const,
+    id: v1(),
+    title,
+  }),
   changeTodolistTitle: (id: string, title: string) => ({
     type: "CHANGE_TODOLIST_TITLE" as const,
     id,

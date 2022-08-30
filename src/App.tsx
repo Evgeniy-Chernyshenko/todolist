@@ -17,7 +17,7 @@ import { AddItemForm } from "./AddItemForm";
 import "./App.css";
 import { FilterValuesType, TaskType, Todolist, TodolistType } from "./Todolist";
 
-type TasksStateType = { [key: string]: TaskType[] };
+export type TasksStateType = { [key: string]: TaskType[] };
 
 const todolist1Id = v1();
 const todolist2Id = v1();
