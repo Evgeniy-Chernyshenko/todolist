@@ -1,5 +1,4 @@
-import { TasksStateType } from "../App";
-import { actions, tasksReducer } from "./tasks-reducer";
+import { tasksActions, tasksReducer, TasksStateType } from "./tasks-reducer";
 
 let startState: TasksStateType;
 beforeEach(() => {
@@ -19,7 +18,7 @@ beforeEach(() => {
 test("correct task should be deleted from correct array", () => {
   const endState = tasksReducer(
     startState,
-    actions.removeTask("taskId2", "todolistId1")
+    tasksActions.removeTask("taskId2", "todolistId1")
   );
 
   expect(endState).toEqual({
@@ -35,7 +34,7 @@ test("correct task should be deleted from correct array", () => {
 });
 
 test("correct task should be added to correct array", () => {
-  const action = actions.addTask("juce", "todolistId2");
+  const action = tasksActions.addTask("juce", "todolistId2");
 
   const endState = tasksReducer(startState, action);
 
@@ -49,7 +48,7 @@ test("correct task should be added to correct array", () => {
 test("status of specified task should be changed", () => {
   const endState = tasksReducer(
     startState,
-    actions.changeTaskStatus("taskId1", true, "todolistId2")
+    tasksActions.changeTaskStatus("taskId1", true, "todolistId2")
   );
 
   expect(endState).toEqual({
@@ -68,7 +67,7 @@ test("status of specified task should be changed", () => {
 test("title of specified task should be changed", () => {
   const endState = tasksReducer(
     startState,
-    actions.changeTaskTitle("taskId1", "New task 4", "todolistId2")
+    tasksActions.changeTaskTitle("taskId1", "New task 4", "todolistId2")
   );
 
   expect(endState).toEqual({

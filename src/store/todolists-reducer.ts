@@ -1,11 +1,26 @@
 import { v1 } from "uuid";
-import { FilterValuesType, TodolistType } from "../Todolist";
 
-type ActionKeys = keyof typeof actions;
-type ActionType = ReturnType<typeof actions[ActionKeys]>;
+type ActionKeys = keyof typeof todolistsActions;
+type ActionType = ReturnType<typeof todolistsActions[ActionKeys]>;
 
-export const todolistReducer = (
-  state: TodolistType[],
+export type FilterValuesType = "all" | "active" | "completed";
+
+export type TodolistType = {
+  id: string;
+  title: string;
+  filter: FilterValuesType;
+};
+
+export const todolist1Id = v1();
+export const todolist2Id = v1();
+
+const initialState: TodolistType[] = [
+  { id: todolist1Id, title: "What to learn", filter: "all" },
+  { id: todolist2Id, title: "What to buy", filter: "all" },
+];
+
+export const todolistsReducer = (
+  state: TodolistType[] = initialState,
   action: ActionType
 ): TodolistType[] => {
   switch (action.type) {
@@ -35,7 +50,7 @@ export const todolistReducer = (
   }
 };
 
-export const actions = {
+export const todolistsActions = {
   removeTodolist: (id: string) => ({ type: "REMOVE_TODOLIST" as const, id }),
   addTodolist: (title: string) => ({
     type: "ADD_TODOLIST" as const,

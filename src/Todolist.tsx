@@ -14,58 +14,61 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { ChangeEvent } from "react";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { AddItemForm } from "./AddItemForm";
 import { Editable } from "./Editable";
+import { AppStateType } from "./store/store";
+import { tasksActions, TaskType } from "./store/tasks-reducer";
+import {
+  FilterValuesType,
+  todolistsActions,
+  TodolistType,
+} from "./store/todolists-reducer";
 
-type TodolistPropsType = TodolistType & {
-  tasks: TaskType[];
-  removeTask: (id: string, todolistId: string) => void;
-  changeFilter: (filterValue: FilterValuesType, todolistId: string) => void;
-  addTask: (newTaskTitle: string, todolistId: string) => void;
-  changeTaskStatus: (id: string, isDone: boolean, todolistId: string) => void;
-  removeTodolist: (todolistId: string) => void;
-  changeTaskTitle: (title: string, taskId: string, todolistId: string) => void;
-  changeTodolistTitle: (title: string, todolistId: string) => void;
-};
+export function Todolist(props: TodolistType) {
+  const tasks = useSelector<AppStateType, TaskType[]>(
+    (state) => state.tasks[props.id]
+  );
+  const dispatch = useDispatch();
 
-export type TodolistType = {
-  id: string;
-  title: string;
-  filter: FilterValuesType;
-};
-
-export type TaskType = {
-  id: string;
-  title: string;
-  isDone: boolean;
-};
-
-export type FilterValuesType = "all" | "active" | "completed";
-
-export function Todolist(props: TodolistPropsType) {
-  const onRemoveTaskClickHandler = (taskId: string) => {
-    props.removeTask(taskId, props.id);
-  };
-
-  const onTasksFilterChangeHandler = (filterValue: FilterValuesType) => {
-    props.changeFilter(filterValue, props.id);
-  };
+  const onRemoveTaskClickHandler = (taskId: string) =>
+    dispatch(tasksActions.removeTask(taskId, props.id));
 
   const onTaskStatusChangeClickHandler = (
     e: ChangeEvent<HTMLInputElement>,
     id: string
-  ) => {
-    props.changeTaskStatus(id, e.currentTarget.checked, props.id);
-  };
+  ) =>
+    dispatch(
+      tasksActions.changeTaskStatus(id, e.currentTarget.checked, props.id)
+    );
 
-  const removeTodolistHandler = () => {
-    props.removeTodolist(props.id);
-  };
+  const addTask = (title: string) =>
+    dispatch(tasksActions.addTask(title, props.id));
 
-  const addTask = (title: string) => props.addTask(title, props.id);
+  const changeTaskTitleHandler = (title: string, id: string) =>
+    dispatch(tasksActions.changeTaskTitle(id, title, props.id));
+
+  const onTasksFilterChangeHandler = (filterValue: FilterValuesType) =>
+    dispatch(todolistsActions.changeTodolistFilter(props.id, filterValue));
+
+  const removeTodolistHandler = () =>
+    dispatch(todolistsActions.removeTodolist(props.id));
 
   const changeTodolistTitle = (title: string) =>
-    props.changeTodolistTitle(title, props.id);
+    dispatch(todolistsActions.changeTodolistTitle(props.id, title));
+
+  const filteredTasks = tasks.filter((task) => {
+    if (props.filter === "completed") {
+      return task.isDone;
+    }
+
+    if (props.filter === "active") {
+      return !task.isDone;
+    }
+
+    return true;
+  });
 
   return (
     <Grid xs={12} md={6} lg={4}>
@@ -100,15 +103,11 @@ export function Todolist(props: TodolistPropsType) {
             </Typography>
             <AddItemForm onAddItem={addTask} label="New task title" />
             <List sx={{ mt: 2, mb: 2 }}>
-              {props.tasks.map((task, i, tasks) => {
-                const changeTaskTitleHandler = (title: string) =>
-                  props.changeTaskTitle(title, task.id, props.id);
-
+              {filteredTasks.map((task, i, tasks) => {
                 return (
-                  <>
+                  <div key={task.id}>
                     <ListItem
                       disablePadding
-                      key={task.id}
                       className={task.isDone ? "done" : ""}
                       sx={{ gap: 1, p: 0.5 }}
                     >
@@ -128,7 +127,9 @@ export function Todolist(props: TodolistPropsType) {
                         />
                         <Editable
                           title={task.title}
-                          onChange={changeTaskTitleHandler}
+                          onChange={(title) =>
+                            changeTaskTitleHandler(title, task.id)
+                          }
                         />
                       </Box>
                       <IconButton
@@ -139,7 +140,7 @@ export function Todolist(props: TodolistPropsType) {
                       </IconButton>
                     </ListItem>
                     {i < tasks.length - 1 && <Divider />}
-                  </>
+                  </div>
                 );
               })}
             </List>
