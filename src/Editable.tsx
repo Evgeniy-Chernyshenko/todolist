@@ -1,24 +1,29 @@
 import { TextField, Typography } from "@mui/material";
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, memo, useCallback, useState } from "react";
 
 type PropsType = {
   title: string;
   onChange: (value: string) => void;
 };
 
-export function Editable(props: PropsType) {
+export const Editable = memo((props: PropsType) => {
+  console.log("Editable");
+
   const [value, setValue] = useState(props.title);
   const [isEditMode, setIsEditMode] = useState(false);
 
-  const onChangeTitleHandler = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.currentTarget.value);
-  };
+  const onChangeTitleHandler = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.currentTarget.value);
+    },
+    []
+  );
 
-  const activateEditMode = () => {
+  const activateEditMode = useCallback(() => {
     setIsEditMode(true);
-  };
+  }, []);
 
-  const activateViewMode = () => {
+  const activateViewMode = useCallback(() => {
     const clearValue = value.trim();
 
     if (!clearValue) {
@@ -29,11 +34,14 @@ export function Editable(props: PropsType) {
     }
 
     setIsEditMode(false);
-  };
+  }, [props, value]);
 
-  const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-    e.code === "Enter" && activateViewMode();
-  };
+  const onKeyPressHandler = useCallback(
+    (e: KeyboardEvent<HTMLInputElement>) => {
+      e.code === "Enter" && activateViewMode();
+    },
+    [activateViewMode]
+  );
 
   return isEditMode ? (
     <TextField
@@ -53,4 +61,4 @@ export function Editable(props: PropsType) {
       {value}
     </Typography>
   );
-}
+});

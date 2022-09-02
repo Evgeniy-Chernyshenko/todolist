@@ -1,13 +1,15 @@
 import { Add } from "@mui/icons-material";
 import { Box, IconButton, TextField } from "@mui/material";
-import { ChangeEvent, KeyboardEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState, memo } from "react";
 
 type PropsType = {
   onAddItem: (value: string) => void;
   label: string;
 };
 
-export function AddItemForm(props: PropsType) {
+export const AddItemForm = memo((props: PropsType) => {
+  console.log("AddItemForm");
+
   const [value, setValue] = useState("");
   const [error, setError] = useState<null | string>(null);
 
@@ -64,4 +66,4 @@ export function AddItemForm(props: PropsType) {
       </IconButton>
     </Box>
   );
-}
+});

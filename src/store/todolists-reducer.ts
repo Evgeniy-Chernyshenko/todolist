@@ -11,12 +11,12 @@ export type TodolistType = {
   filter: FilterValuesType;
 };
 
-export const todolist1Id = v1();
-export const todolist2Id = v1();
+// export const todolist1Id = v1();
+// export const todolist2Id = v1();
 
 const initialState: TodolistType[] = [
-  { id: todolist1Id, title: "What to learn", filter: "all" },
-  { id: todolist2Id, title: "What to buy", filter: "all" },
+  // { id: todolist1Id, title: "What to learn", filter: "all" },
+  // { id: todolist2Id, title: "What to buy", filter: "all" },
 ];
 
 export const todolistsReducer = (

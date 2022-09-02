@@ -1,7 +1,7 @@
 import { v1 } from "uuid";
 import {
-  todolist1Id,
-  todolist2Id,
+  // todolist1Id,
+  // todolist2Id,
   todolistsActions,
 } from "./todolists-reducer";
 
@@ -20,17 +20,17 @@ export type TaskType = {
 export type TasksStateType = { [key: string]: TaskType[] };
 
 const initialState: TasksStateType = {
-  [todolist1Id]: [
-    { id: v1(), title: "HTML", isDone: true },
-    { id: v1(), title: "CSS", isDone: true },
-    { id: v1(), title: "JS", isDone: true },
-    { id: v1(), title: "React", isDone: false },
-  ],
-  [todolist2Id]: [
-    { id: v1(), title: "Bread", isDone: true },
-    { id: v1(), title: "Laptop", isDone: true },
-    { id: v1(), title: "Milk", isDone: false },
-  ],
+  // [todolist1Id]: [
+  //   { id: v1(), title: "HTML", isDone: true },
+  //   { id: v1(), title: "CSS", isDone: true },
+  //   { id: v1(), title: "JS", isDone: true },
+  //   { id: v1(), title: "React", isDone: false },
+  // ],
+  // [todolist2Id]: [
+  //   { id: v1(), title: "Bread", isDone: true },
+  //   { id: v1(), title: "Laptop", isDone: true },
+  //   { id: v1(), title: "Milk", isDone: false },
+  // ],
 };
 
 export const tasksReducer = (

@@ -1,19 +1,16 @@
-import { Delete, DeleteOutline } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import {
-  Box,
   Button,
   ButtonGroup,
   Card,
   CardContent,
-  Checkbox,
   Divider,
   IconButton,
   List,
-  ListItem,
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { ChangeEvent } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { AddItemForm } from "./AddItemForm";
@@ -25,50 +22,70 @@ import {
   todolistsActions,
   TodolistType,
 } from "./store/todolists-reducer";
+import { Task } from "./Task";
 
-export function Todolist(props: TodolistType) {
+export const Todolist = memo((props: TodolistType) => {
+  console.log("Todolist");
+
   const tasks = useSelector<AppStateType, TaskType[]>(
     (state) => state.tasks[props.id]
   );
   const dispatch = useDispatch();
 
-  const onRemoveTaskClickHandler = (taskId: string) =>
-    dispatch(tasksActions.removeTask(taskId, props.id));
+  const removeTask = useCallback(
+    (taskId: string) => dispatch(tasksActions.removeTask(taskId, props.id)),
+    [dispatch, props.id]
+  );
 
-  const onTaskStatusChangeClickHandler = (
-    e: ChangeEvent<HTMLInputElement>,
-    id: string
-  ) =>
-    dispatch(
-      tasksActions.changeTaskStatus(id, e.currentTarget.checked, props.id)
-    );
+  const changeTaskStatus = useCallback(
+    (isDone: boolean, id: string) =>
+      dispatch(tasksActions.changeTaskStatus(id, isDone, props.id)),
+    [dispatch, props.id]
+  );
 
-  const addTask = (title: string) =>
-    dispatch(tasksActions.addTask(title, props.id));
+  const addTask = useCallback(
+    (title: string) => dispatch(tasksActions.addTask(title, props.id)),
+    [dispatch, props.id]
+  );
 
-  const changeTaskTitleHandler = (title: string, id: string) =>
-    dispatch(tasksActions.changeTaskTitle(id, title, props.id));
+  const changeTaskTitle = useCallback(
+    (title: string, id: string) =>
+      dispatch(tasksActions.changeTaskTitle(id, title, props.id)),
+    [dispatch, props.id]
+  );
 
-  const onTasksFilterChangeHandler = (filterValue: FilterValuesType) =>
-    dispatch(todolistsActions.changeTodolistFilter(props.id, filterValue));
+  const onTasksFilterChangeHandler = useCallback(
+    (filterValue: FilterValuesType) =>
+      dispatch(todolistsActions.changeTodolistFilter(props.id, filterValue)),
+    [dispatch, props.id]
+  );
 
-  const removeTodolistHandler = () =>
-    dispatch(todolistsActions.removeTodolist(props.id));
+  const removeTodolistHandler = useCallback(
+    () => dispatch(todolistsActions.removeTodolist(props.id)),
+    [dispatch, props.id]
+  );
 
-  const changeTodolistTitle = (title: string) =>
-    dispatch(todolistsActions.changeTodolistTitle(props.id, title));
+  const changeTodolistTitle = useCallback(
+    (title: string) =>
+      dispatch(todolistsActions.changeTodolistTitle(props.id, title)),
+    [dispatch, props.id]
+  );
 
-  const filteredTasks = tasks.filter((task) => {
-    if (props.filter === "completed") {
-      return task.isDone;
-    }
+  const filteredTasks = useMemo(
+    () =>
+      tasks.filter((task) => {
+        if (props.filter === "completed") {
+          return task.isDone;
+        }
 
-    if (props.filter === "active") {
-      return !task.isDone;
-    }
+        if (props.filter === "active") {
+          return !task.isDone;
+        }
 
-    return true;
-  });
+        return true;
+      }),
+    [props.filter, tasks]
+  );
 
   return (
     <Grid xs={12} md={6} lg={4}>
@@ -103,46 +120,19 @@ export function Todolist(props: TodolistType) {
             </Typography>
             <AddItemForm onAddItem={addTask} label="New task title" />
             <List sx={{ mt: 2, mb: 2 }}>
-              {filteredTasks.map((task, i, tasks) => {
-                return (
-                  <div key={task.id}>
-                    <ListItem
-                      disablePadding
-                      className={task.isDone ? "done" : ""}
-                      sx={{ gap: 1, p: 0.5 }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          flexGrow: 1,
-                        }}
-                      >
-                        <Checkbox
-                          checked={task.isDone}
-                          onChange={(e) =>
-                            onTaskStatusChangeClickHandler(e, task.id)
-                          }
-                        />
-                        <Editable
-                          title={task.title}
-                          onChange={(title) =>
-                            changeTaskTitleHandler(title, task.id)
-                          }
-                        />
-                      </Box>
-                      <IconButton
-                        aria-label="delete task"
-                        onClick={() => onRemoveTaskClickHandler(task.id)}
-                      >
-                        <DeleteOutline />
-                      </IconButton>
-                    </ListItem>
-                    {i < tasks.length - 1 && <Divider />}
-                  </div>
-                );
-              })}
+              {filteredTasks.map((task, i, tasks) => (
+                <div key={task.id}>
+                  <Task
+                    id={task.id}
+                    isDone={task.isDone}
+                    title={task.title}
+                    changeTaskStatus={changeTaskStatus}
+                    changeTaskTitle={changeTaskTitle}
+                    removeTask={removeTask}
+                  />
+                  {i < tasks.length - 1 && <Divider />}
+                </div>
+              ))}
             </List>
           </div>
           <ButtonGroup variant="outlined" fullWidth color="info">
@@ -169,4 +159,4 @@ export function Todolist(props: TodolistType) {
       </Card>
     </Grid>
   );
-}
+});

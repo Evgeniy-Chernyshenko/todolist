@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { DarkMode, LightMode, Menu } from "@mui/icons-material";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { AddItemForm } from "./AddItemForm";
 import "./App.css";
 import { Todolist } from "./Todolist";
@@ -21,15 +21,20 @@ import { AppStateType } from "./store/store";
 import { useDispatch } from "react-redux";
 
 function App() {
+  console.log("App");
+
   const [isDarkMode, setIsDarkMode] = useState(false);
   const todolists = useSelector<AppStateType, AppStateType["todolists"]>(
     (state) => state.todolists
   );
   const dispatch = useDispatch();
 
-  const addTodolist = (title: string) => {
-    dispatch(todolistsActions.addTodolist(title));
-  };
+  const addTodolist = useCallback(
+    (title: string) => {
+      dispatch(todolistsActions.addTodolist(title));
+    },
+    [dispatch]
+  );
 
   const theme = createTheme({
     palette: {
