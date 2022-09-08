@@ -15,38 +15,37 @@ export const Task = memo((props: PropsType) => {
   console.log("Task");
 
   return (
-    <div key={props.id}>
-      <ListItem
-        disablePadding
-        className={props.isDone ? "done" : ""}
-        sx={{ gap: 1, p: 0.5 }}
+    <ListItem
+      key={props.id}
+      disablePadding
+      className={props.isDone ? "done" : ""}
+      sx={{ gap: 1, p: 0.5 }}
+    >
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          flexGrow: 1,
+        }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            flexGrow: 1,
-          }}
-        >
-          <Checkbox
-            checked={props.isDone}
-            onChange={(e) =>
-              props.changeTaskStatus(e.currentTarget.checked, props.id)
-            }
-          />
-          <Editable
-            title={props.title}
-            onChange={(title) => props.changeTaskTitle(title, props.id)}
-          />
-        </Box>
-        <IconButton
-          aria-label="delete task"
-          onClick={() => props.removeTask(props.id)}
-        >
-          <DeleteOutline />
-        </IconButton>
-      </ListItem>
-    </div>
+        <Checkbox
+          checked={props.isDone}
+          onChange={(e) =>
+            props.changeTaskStatus(e.currentTarget.checked, props.id)
+          }
+        />
+        <Editable
+          title={props.title}
+          onChange={(title) => props.changeTaskTitle(title, props.id)}
+        />
+      </Box>
+      <IconButton
+        aria-label="delete task"
+        onClick={() => props.removeTask(props.id)}
+      >
+        <DeleteOutline />
+      </IconButton>
+    </ListItem>
   );
 });

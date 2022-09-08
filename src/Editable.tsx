@@ -20,8 +20,9 @@ export const Editable = memo((props: PropsType) => {
   );
 
   const activateEditMode = useCallback(() => {
+    setValue(props.title);
     setIsEditMode(true);
-  }, []);
+  }, [props.title]);
 
   const activateViewMode = useCallback(() => {
     const clearValue = value.trim();
@@ -58,7 +59,7 @@ export const Editable = memo((props: PropsType) => {
       onDoubleClick={activateEditMode}
       sx={{ wordBreak: "break-word" }}
     >
-      {value}
+      {props.title}
     </Typography>
   );
 });
