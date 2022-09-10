@@ -13,28 +13,28 @@ type ResponseType2<D> = {
   error: null | string;
 };
 
-type TodolistType = {
+export type TodolistType = {
   id: string;
   title: string;
   addedDate: string;
   order: number;
 };
 
-type TaskType = {
+export type TaskType = {
   id: string;
   todoListId: string;
   order: number;
   addedDate: string;
 } & UpdateTaskModelType;
 
-enum TaskStatuses {
+export enum TaskStatuses {
   New = 0,
   InProgress = 1,
   Completed = 2,
   Draft = 3,
 }
 
-enum TaskPriorities {
+export enum TaskPriorities {
   Low = 0,
   Middle = 1,
   High = 2,

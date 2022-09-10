@@ -1,6 +1,7 @@
 import { Provider } from "react-redux";
 import { combineReducers, legacy_createStore } from "redux";
 import { v1 } from "uuid";
+import { TaskPriorities, TaskStatuses } from "../api/todolists-api";
 import { AppStateType } from "./store";
 import { tasksReducer } from "./tasks-reducer";
 import { todolistsReducer } from "./todolists-reducer";
@@ -12,17 +13,73 @@ const rootReducer = combineReducers({
 
 const initialGlobalState: AppStateType = {
   todolists: [
-    { id: "todolist1Id", filter: "all", title: "Todolist 1" },
-    { id: "todolist2Id", filter: "all", title: "Todolist 2" },
+    {
+      id: "todolist1Id",
+      filter: "all",
+      title: "Todolist 1",
+      addedDate: "",
+      order: 0,
+    },
+    {
+      id: "todolist2Id",
+      filter: "all",
+      title: "Todolist 2",
+      addedDate: "",
+      order: 0,
+    },
   ],
   tasks: {
     todolist1Id: [
-      { id: v1(), isDone: false, title: "Task 1" },
-      { id: v1(), isDone: false, title: "Task 2" },
+      {
+        id: v1(),
+        status: TaskStatuses.New,
+        title: "Task 1",
+        addedDate: "",
+        deadline: "",
+        description: "",
+        order: 0,
+        priority: TaskPriorities.Low,
+        startDate: "",
+        todoListId: "todolist1Id",
+      },
+      {
+        id: v1(),
+        status: TaskStatuses.New,
+        title: "Task 2",
+        addedDate: "",
+        deadline: "",
+        description: "",
+        order: 0,
+        priority: TaskPriorities.Low,
+        startDate: "",
+        todoListId: "todolist1Id",
+      },
     ],
     todolist2Id: [
-      { id: v1(), isDone: false, title: "Task 3" },
-      { id: v1(), isDone: false, title: "Task 4" },
+      {
+        id: v1(),
+        status: TaskStatuses.New,
+        title: "Task 3",
+        addedDate: "",
+        deadline: "",
+        description: "",
+        order: 0,
+        priority: TaskPriorities.Low,
+        startDate: "",
+        todoListId: "todolist1Id",
+      },
+      {
+        id: v1(),
+        status: TaskStatuses.New,
+        title: "Task 4",
+        addedDate: "",
+        deadline: "",
+        description: "",
+        order: 0,
+        priority: TaskPriorities.Low,
+        startDate: "",
+        todoListId: "todolist1Id",
+      },
     ],
   },
 };

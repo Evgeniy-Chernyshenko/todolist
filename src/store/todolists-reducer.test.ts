@@ -1,19 +1,31 @@
 import { v1 } from "uuid";
 import {
+  TodolistDomainType,
   todolistsActions,
   todolistsReducer,
-  TodolistType,
 } from "./todolists-reducer";
 
 let todolist1Id = v1();
 let todolist2Id = v1();
 
-let startState: TodolistType[];
+let startState: TodolistDomainType[];
 
 beforeEach(() => {
   startState = [
-    { id: todolist1Id, title: "What to learn", filter: "all" },
-    { id: todolist2Id, title: "What to buy", filter: "all" },
+    {
+      id: todolist1Id,
+      title: "What to learn",
+      filter: "all",
+      addedDate: "",
+      order: 0,
+    },
+    {
+      id: todolist2Id,
+      title: "What to buy",
+      filter: "all",
+      addedDate: "",
+      order: 0,
+    },
   ];
 });
 

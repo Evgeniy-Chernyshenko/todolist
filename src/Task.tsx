@@ -2,12 +2,15 @@ import { DeleteOutline } from "@mui/icons-material";
 import { Checkbox, IconButton, ListItem } from "@mui/material";
 import { Box } from "@mui/system";
 import { memo } from "react";
+import { TaskStatuses, TaskType } from "./api/todolists-api";
 import { Editable } from "./Editable";
-import { TaskType } from "./store/tasks-reducer";
 
-type PropsType = TaskType & {
+type PropsType = {
+  id: string;
+  status: TaskStatuses;
+  title: string;
   removeTask: (taskId: string) => void;
-  changeTaskStatus: (isDone: boolean, id: string) => void;
+  changeTaskStatus: (status: TaskStatuses, id: string) => void;
   changeTaskTitle: (title: string, id: string) => void;
 };
 
@@ -18,7 +21,7 @@ export const Task = memo((props: PropsType) => {
     <ListItem
       key={props.id}
       disablePadding
-      className={props.isDone ? "done" : ""}
+      className={props.status === TaskStatuses.Completed ? "done" : ""}
       sx={{ gap: 1, p: 0.5 }}
     >
       <Box
@@ -30,9 +33,14 @@ export const Task = memo((props: PropsType) => {
         }}
       >
         <Checkbox
-          checked={props.isDone}
+          checked={props.status === TaskStatuses.Completed}
           onChange={(e) =>
-            props.changeTaskStatus(e.currentTarget.checked, props.id)
+            props.changeTaskStatus(
+              e.currentTarget.checked
+                ? TaskStatuses.Completed
+                : TaskStatuses.InProgress,
+              props.id
+            )
           }
         />
         <Editable

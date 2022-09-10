@@ -14,17 +14,24 @@ import { memo, useCallback, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { AddItemForm } from "./AddItemForm";
+import { TaskStatuses, TaskType } from "./api/todolists-api";
 import { Editable } from "./Editable";
 import { AppStateType } from "./store/store";
-import { tasksActions, TaskType } from "./store/tasks-reducer";
+import { tasksActions } from "./store/tasks-reducer";
 import {
   FilterValuesType,
+  TodolistDomainType,
   todolistsActions,
-  TodolistType,
 } from "./store/todolists-reducer";
 import { Task } from "./Task";
 
-export const Todolist = memo((props: TodolistType) => {
+type PropsType = {
+  id: string;
+  title: string;
+  filter: FilterValuesType;
+};
+
+export const Todolist = memo((props: PropsType) => {
   console.log("Todolist");
 
   const tasks = useSelector<AppStateType, TaskType[]>(
@@ -38,8 +45,8 @@ export const Todolist = memo((props: TodolistType) => {
   );
 
   const changeTaskStatus = useCallback(
-    (isDone: boolean, id: string) =>
-      dispatch(tasksActions.changeTaskStatus(id, isDone, props.id)),
+    (status: TaskStatuses, id: string) =>
+      dispatch(tasksActions.changeTaskStatus(id, status, props.id)),
     [dispatch, props.id]
   );
 
@@ -75,11 +82,11 @@ export const Todolist = memo((props: TodolistType) => {
     () =>
       tasks.filter((task) => {
         if (props.filter === "completed") {
-          return task.isDone;
+          return task.status === TaskStatuses.Completed;
         }
 
         if (props.filter === "active") {
-          return !task.isDone;
+          return task.status !== TaskStatuses.Completed;
         }
 
         return true;
@@ -124,7 +131,7 @@ export const Todolist = memo((props: TodolistType) => {
                 <div key={task.id}>
                   <Task
                     id={task.id}
-                    isDone={task.isDone}
+                    status={task.status}
                     title={task.title}
                     changeTaskStatus={changeTaskStatus}
                     changeTaskTitle={changeTaskTitle}
