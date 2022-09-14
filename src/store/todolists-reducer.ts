@@ -1,8 +1,10 @@
-import { v1 } from "uuid";
-import { TodolistType } from "../api/todolists-api";
+import { todolistsAPI, TodolistType } from "../api/todolists-api";
+import { AppThunk } from "./store";
 
 type ActionKeys = keyof typeof todolistsActions;
-type ActionType = ReturnType<typeof todolistsActions[ActionKeys]>;
+export type TodolistActionType = ReturnType<
+  typeof todolistsActions[ActionKeys]
+>;
 
 export type FilterValuesType = "all" | "active" | "completed";
 
@@ -10,13 +12,11 @@ export type TodolistDomainType = TodolistType & {
   filter: FilterValuesType;
 };
 
-type TodolistsStateType = TodolistDomainType[];
-
-const initialState: TodolistsStateType = [];
+const initialState: TodolistDomainType[] = [];
 
 export const todolistsReducer = (
   state = initialState,
-  action: ActionType
+  action: TodolistActionType
 ): TodolistDomainType[] => {
   switch (action.type) {
     case "REMOVE_TODOLIST": {
@@ -25,14 +25,11 @@ export const todolistsReducer = (
 
     case "ADD_TODOLIST": {
       return [
-        ...state,
         {
-          id: action.id,
-          title: action.title,
+          ...action.todolist,
           filter: "all",
-          addedDate: "",
-          order: 0,
         },
+        ...state,
       ];
     }
 
@@ -48,6 +45,10 @@ export const todolistsReducer = (
       );
     }
 
+    case "SET_TODOLISTS": {
+      return action.todolists.map((v) => ({ ...v, filter: "all" }));
+    }
+
     default: {
       return state;
     }
@@ -56,10 +57,9 @@ export const todolistsReducer = (
 
 export const todolistsActions = {
   removeTodolist: (id: string) => ({ type: "REMOVE_TODOLIST" as const, id }),
-  addTodolist: (title: string) => ({
+  addTodolist: (todolist: TodolistType) => ({
     type: "ADD_TODOLIST" as const,
-    id: v1(),
-    title,
+    todolist,
   }),
   changeTodolistTitle: (id: string, title: string) => ({
     type: "CHANGE_TODOLIST_TITLE" as const,
@@ -71,4 +71,36 @@ export const todolistsActions = {
     id,
     filter,
   }),
+  setTodolists: (todolists: TodolistType[]) => ({
+    type: "SET_TODOLISTS" as const,
+    todolists,
+  }),
+};
+
+export const todolistsThunks = {
+  setTodolists: (): AppThunk => (dispatch) => {
+    todolistsAPI
+      .getTodolists()
+      .then((responseData) =>
+        dispatch(todolistsActions.setTodolists(responseData))
+      );
+  },
+  removeTodolists:
+    (id: string): AppThunk =>
+    async (dispatch) => {
+      await todolistsAPI.deleteTodolist(id);
+      dispatch(todolistsActions.removeTodolist(id));
+    },
+  addTodolists:
+    (title: string): AppThunk =>
+    async (dispatch) => {
+      const responseData = await todolistsAPI.createTodolist(title);
+      dispatch(todolistsActions.addTodolist(responseData.data.item));
+    },
+  changeTodolistTitle:
+    (id: string, title: string): AppThunk =>
+    async (dispatch) => {
+      await todolistsAPI.updateTodolist(id, title);
+      dispatch(todolistsActions.changeTodolistTitle(id, title));
+    },
 };

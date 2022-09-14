@@ -11,30 +11,22 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
 import { DarkMode, LightMode, Menu } from "@mui/icons-material";
-import { useCallback, useState } from "react";
-import { AddItemForm } from "./AddItemForm";
+import { useState, useEffect } from "react";
 import "./App.css";
-import { Todolist } from "./Todolist";
-import { todolistsActions } from "./store/todolists-reducer";
-import { useSelector } from "react-redux";
-import { AppStateType } from "./store/store";
+import { AppDispatch } from "../store/store";
 import { useDispatch } from "react-redux";
+import { TodolistsList } from "../pages/TodolistsList/TodolistsList";
+import { todolistsThunks } from "../store/todolists-reducer";
 
 function App() {
   console.log("App");
 
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const todolists = useSelector<AppStateType, AppStateType["todolists"]>(
-    (state) => state.todolists
-  );
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
-  const addTodolist = useCallback(
-    (title: string) => {
-      dispatch(todolistsActions.addTodolist(title));
-    },
-    [dispatch]
-  );
+  useEffect(() => {
+    dispatch(todolistsThunks.setTodolists());
+  }, [dispatch]);
 
   const theme = createTheme({
     palette: {
@@ -70,20 +62,7 @@ function App() {
       </AppBar>
       <Container sx={{ pt: 4 }}>
         <Grid container spacing={4}>
-          <Grid xs={12}>
-            <AddItemForm onAddItem={addTodolist} label="New todolist title" />
-          </Grid>
-
-          {todolists.map((todolist) => {
-            return (
-              <Todolist
-                key={todolist.id}
-                id={todolist.id}
-                title={todolist.title}
-                filter={todolist.filter}
-              />
-            );
-          })}
+          <TodolistsList />
         </Grid>
       </Container>
     </ThemeProvider>

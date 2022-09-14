@@ -2,8 +2,8 @@ import { DeleteOutline } from "@mui/icons-material";
 import { Checkbox, IconButton, ListItem } from "@mui/material";
 import { Box } from "@mui/system";
 import { memo } from "react";
-import { TaskStatuses, TaskType } from "./api/todolists-api";
-import { Editable } from "./Editable";
+import { TaskStatuses } from "../../../api/todolists-api";
+import { Editable } from "../../../components/Editable/Editable";
 
 type PropsType = {
   id: string;

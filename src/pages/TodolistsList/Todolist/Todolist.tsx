@@ -10,20 +10,18 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { memo, useCallback, useMemo } from "react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { AddItemForm } from "./AddItemForm";
-import { TaskStatuses, TaskType } from "./api/todolists-api";
-import { Editable } from "./Editable";
-import { AppStateType } from "./store/store";
-import { tasksActions } from "./store/tasks-reducer";
+import { memo, useCallback, useMemo, useEffect } from "react";
+import { TaskStatuses } from "../../../api/todolists-api";
+import { AddItemForm } from "../../../components/AddItemForm/AddItemForm";
+import { Editable } from "../../../components/Editable/Editable";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { tasksThunks } from "../../../store/tasks-reducer";
 import {
   FilterValuesType,
-  TodolistDomainType,
   todolistsActions,
-} from "./store/todolists-reducer";
-import { Task } from "./Task";
+  todolistsThunks,
+} from "../../../store/todolists-reducer";
+import { Task } from "../Task/Task";
 
 type PropsType = {
   id: string;
@@ -34,30 +32,34 @@ type PropsType = {
 export const Todolist = memo((props: PropsType) => {
   console.log("Todolist");
 
-  const tasks = useSelector<AppStateType, TaskType[]>(
-    (state) => state.tasks[props.id]
-  );
-  const dispatch = useDispatch();
+  const tasks = useAppSelector((state) => state.tasks[props.id]);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(tasksThunks.setTasks(props.id));
+  }, [dispatch, props.id]);
 
   const removeTask = useCallback(
-    (taskId: string) => dispatch(tasksActions.removeTask(taskId, props.id)),
+    (taskId: string) => {
+      dispatch(tasksThunks.removeTask(taskId, props.id));
+    },
     [dispatch, props.id]
   );
 
   const changeTaskStatus = useCallback(
     (status: TaskStatuses, id: string) =>
-      dispatch(tasksActions.changeTaskStatus(id, status, props.id)),
+      dispatch(tasksThunks.updateTask(props.id, id, { status })),
     [dispatch, props.id]
   );
 
   const addTask = useCallback(
-    (title: string) => dispatch(tasksActions.addTask(title, props.id)),
+    (title: string) => dispatch(tasksThunks.addTask(title, props.id)),
     [dispatch, props.id]
   );
 
   const changeTaskTitle = useCallback(
     (title: string, id: string) =>
-      dispatch(tasksActions.changeTaskTitle(id, title, props.id)),
+      dispatch(tasksThunks.updateTask(props.id, id, { title })),
     [dispatch, props.id]
   );
 
@@ -68,13 +70,13 @@ export const Todolist = memo((props: PropsType) => {
   );
 
   const removeTodolistHandler = useCallback(
-    () => dispatch(todolistsActions.removeTodolist(props.id)),
+    () => dispatch(todolistsThunks.removeTodolists(props.id)),
     [dispatch, props.id]
   );
 
   const changeTodolistTitle = useCallback(
     (title: string) =>
-      dispatch(todolistsActions.changeTodolistTitle(props.id, title)),
+      dispatch(todolistsThunks.changeTodolistTitle(props.id, title)),
     [dispatch, props.id]
   );
 

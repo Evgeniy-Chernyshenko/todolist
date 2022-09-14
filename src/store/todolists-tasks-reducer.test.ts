@@ -6,7 +6,11 @@ import {
   todolistsReducer,
   TodolistDomainType,
 } from "./todolists-reducer";
-import { TaskPriorities, TaskStatuses } from "../api/todolists-api";
+import {
+  TaskPriorities,
+  TaskStatuses,
+  TodolistType,
+} from "../api/todolists-api";
 
 const todolist1Id = v1();
 const todolist2Id = v1();
@@ -101,17 +105,22 @@ beforeEach(() => {
 });
 
 test("ids should be equals", () => {
-  const action = todolistsActions.addTodolist("New todolist");
+  const action = todolistsActions.addTodolist({
+    addedDate: "",
+    id: "new id",
+    order: 0,
+    title: "New todolist",
+  });
 
   const endTasksState = tasksReducer(startTasksState, action);
   const endTodolistsState = todolistsReducer(startTodolistState, action);
 
   const keys = Object.keys(endTasksState);
   const idFromTasks = keys[2];
-  const idFromTodolists = endTodolistsState[2].id;
+  const idFromTodolists = endTodolistsState[0].id;
 
-  expect(idFromTasks).toBe(action.id);
-  expect(idFromTodolists).toBe(action.id);
+  expect(idFromTasks).toBe(action.todolist.id);
+  expect(idFromTodolists).toBe(action.todolist.id);
 });
 
 test("property with todolistId should be deleted", () => {
@@ -123,4 +132,41 @@ test("property with todolistId should be deleted", () => {
   expect(Object.keys(endTasksState).length).toBe(1);
   expect(endTasksState[todolist2Id]).not.toBeDefined();
   expect(endTodolistsState.length).toBe(1);
+});
+
+test("property with todolistId should be deleted", () => {
+  const action = todolistsActions.removeTodolist(todolist2Id);
+
+  const endTasksState = tasksReducer(startTasksState, action);
+  const endTodolistsState = todolistsReducer(startTodolistState, action);
+
+  expect(Object.keys(endTasksState).length).toBe(1);
+  expect(endTasksState[todolist2Id]).not.toBeDefined();
+  expect(endTodolistsState.length).toBe(1);
+});
+
+test("todolists set should be correct", () => {
+  const todolistsResponseFromAPI: TodolistType[] = [
+    {
+      id: todolist1Id,
+      title: "What to learn",
+      addedDate: "",
+      order: 0,
+    },
+    {
+      id: todolist2Id,
+      title: "What to buy",
+      addedDate: "",
+      order: 0,
+    },
+  ];
+
+  const action = todolistsActions.setTodolists(todolistsResponseFromAPI);
+
+  const endTodolistsState = todolistsReducer([], action);
+  const endTasksState = tasksReducer({}, action);
+
+  expect(endTodolistsState).toHaveLength(2);
+  expect(endTasksState[todolist1Id]).toStrictEqual([]);
+  expect(endTasksState[todolist2Id]).toStrictEqual([]);
 });

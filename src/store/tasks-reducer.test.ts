@@ -134,25 +134,39 @@ test("correct task should be deleted from correct array", () => {
 });
 
 test("correct task should be added to correct array", () => {
-  const action = tasksActions.addTask("juce", "todolistId2");
+  const action = tasksActions.addTask({
+    addedDate: "",
+    deadline: "",
+    description: "",
+    id: "",
+    order: 0,
+    priority: TaskPriorities.Low,
+    startDate: "",
+    status: TaskStatuses.New,
+    title: "juce",
+    todoListId: "todolistId2",
+  });
 
   const endState = tasksReducer(startState, action);
 
   expect(endState["todolistId1"].length).toBe(3);
   expect(endState["todolistId2"].length).toBe(3);
   expect(endState["todolistId2"][0].id).toBeDefined();
-  expect(endState["todolistId2"][2].title).toBe("juce");
-  expect(endState["todolistId2"][0].status).toBe(TaskStatuses.InProgress);
+  expect(endState["todolistId2"][0].title).toBe("juce");
+  expect(endState["todolistId2"][0].status).toBe(TaskStatuses.New);
 });
 
 test("status of specified task should be changed", () => {
   const endState = tasksReducer(
     startState,
-    tasksActions.changeTaskStatus(
-      "taskId1",
-      TaskStatuses.Completed,
-      "todolistId2"
-    )
+    tasksActions.updateTask("todolistId2", "taskId1", {
+      status: TaskStatuses.Completed,
+      deadline: "",
+      description: "",
+      priority: TaskPriorities.Low,
+      startDate: "",
+      title: "Task 4",
+    })
   );
 
   expect(endState).toEqual({
@@ -226,7 +240,14 @@ test("status of specified task should be changed", () => {
 test("title of specified task should be changed", () => {
   const endState = tasksReducer(
     startState,
-    tasksActions.changeTaskTitle("taskId1", "New task 4", "todolistId2")
+    tasksActions.updateTask("todolistId2", "taskId1", {
+      title: "New task 4",
+      deadline: "",
+      description: "",
+      priority: TaskPriorities.Low,
+      startDate: "",
+      status: TaskStatuses.InProgress,
+    })
   );
 
   expect(endState).toEqual({
@@ -295,4 +316,14 @@ test("title of specified task should be changed", () => {
       },
     ],
   });
+});
+
+test("tasks set should be correct", () => {
+  const endState = tasksReducer(
+    { todolistId1: [], todolistId2: [] },
+    tasksActions.setTasks(startState.todolistId1, "todolistId1")
+  );
+
+  expect(endState.todolistId1).toHaveLength(3);
+  expect(endState.todolistId2).toHaveLength(0);
 });

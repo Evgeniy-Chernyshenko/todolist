@@ -25,7 +25,7 @@ export type TaskType = {
   todoListId: string;
   order: number;
   addedDate: string;
-} & UpdateTaskModelType;
+} & UpdateTaskApiModelType;
 
 export enum TaskStatuses {
   New = 0,
@@ -42,7 +42,7 @@ export enum TaskPriorities {
   Later = 4,
 }
 
-type UpdateTaskModelType = {
+export type UpdateTaskApiModelType = {
   title: string;
   description: null | string;
   status: TaskStatuses;
@@ -87,7 +87,7 @@ export const todolistsAPI = {
   updateTask: async (
     todolistId: string,
     taskId: string,
-    model: UpdateTaskModelType
+    model: UpdateTaskApiModelType
   ) => {
     return (
       await client.put<ResponseType1<{ item: TaskType }>>(

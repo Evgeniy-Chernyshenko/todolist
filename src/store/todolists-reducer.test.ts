@@ -42,12 +42,17 @@ test("todolist should be removed", () => {
 test("todolist should be added", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.addTodolist("New todolist")
+    todolistsActions.addTodolist({
+      addedDate: "",
+      id: "new id",
+      order: 0,
+      title: "New todolist",
+    })
   );
 
   expect(endState).toHaveLength(3);
-  expect(endState[2].title).toBe("New todolist");
-  expect(endState[2].filter).toBe("all");
+  expect(endState[0].title).toBe("New todolist");
+  expect(endState[0].filter).toBe("all");
 });
 
 test("todolist title should be changed", () => {

@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { useSelector } from "react-redux";
-import { ReduxStoreProviderDecorator } from "./store/ReduxStoreProviderDecorator";
-import { AppStateType } from "./store/store";
+import { ReduxStoreProviderDecorator } from "../../../store/ReduxStoreProviderDecorator";
+import { AppStateType } from "../../../store/store";
 import { Todolist } from "./Todolist";
 
 export default {
