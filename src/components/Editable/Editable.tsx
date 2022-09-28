@@ -4,10 +4,11 @@ import { ChangeEvent, KeyboardEvent, memo, useCallback, useState } from "react";
 type PropsType = {
   title: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
 };
 
 export const Editable = memo((props: PropsType) => {
-  console.log("Editable");
+  console.log("Editable", props);
 
   const [value, setValue] = useState(props.title);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -20,9 +21,13 @@ export const Editable = memo((props: PropsType) => {
   );
 
   const activateEditMode = useCallback(() => {
+    if (props.disabled) {
+      return;
+    }
+
     setValue(props.title);
     setIsEditMode(true);
-  }, [props.title]);
+  }, [props.title, props.disabled]);
 
   const activateViewMode = useCallback(() => {
     const clearValue = value.trim();

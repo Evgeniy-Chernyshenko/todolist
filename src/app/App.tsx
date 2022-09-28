@@ -17,6 +17,8 @@ import { AppDispatch } from "../store/store";
 import { useDispatch } from "react-redux";
 import { TodolistsList } from "../pages/TodolistsList/TodolistsList";
 import { todolistsThunks } from "../store/todolists-reducer";
+import { ErrorSnackbar } from "../components/ErrorSnackbar/ErrorSnackbar";
+import { LoadingProgress } from "../components/LoadingProgress/LoadingProgress";
 
 function App() {
   console.log("App");
@@ -60,11 +62,13 @@ function App() {
           </IconButton>
         </Toolbar>
       </AppBar>
+      <LoadingProgress />
       <Container sx={{ pt: 4 }}>
         <Grid container spacing={4}>
           <TodolistsList />
         </Grid>
       </Container>
+      <ErrorSnackbar />
     </ThemeProvider>
   );
 }

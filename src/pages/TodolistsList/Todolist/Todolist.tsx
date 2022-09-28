@@ -18,19 +18,16 @@ import { useAppDispatch, useAppSelector } from "../../../hooks";
 import { tasksThunks } from "../../../store/tasks-reducer";
 import {
   FilterValuesType,
+  TodolistDomainType,
   todolistsActions,
   todolistsThunks,
 } from "../../../store/todolists-reducer";
 import { Task } from "../Task/Task";
 
-type PropsType = {
-  id: string;
-  title: string;
-  filter: FilterValuesType;
-};
+type PropsType = TodolistDomainType;
 
 export const Todolist = memo((props: PropsType) => {
-  console.log("Todolist");
+  console.log("Todolist", props);
 
   const tasks = useAppSelector((state) => state.tasks[props.id]);
   const dispatch = useAppDispatch();
@@ -70,7 +67,7 @@ export const Todolist = memo((props: PropsType) => {
   );
 
   const removeTodolistHandler = useCallback(
-    () => dispatch(todolistsThunks.removeTodolists(props.id)),
+    () => dispatch(todolistsThunks.removeTodolist(props.id)),
     [dispatch, props.id]
   );
 
@@ -119,22 +116,29 @@ export const Todolist = memo((props: PropsType) => {
                 mb: 2,
               }}
             >
-              <Editable title={props.title} onChange={changeTodolistTitle} />
+              <Editable
+                title={props.title}
+                onChange={changeTodolistTitle}
+                disabled={props.isLoading}
+              />
               <IconButton
                 aria-label="delete todolist"
                 onClick={removeTodolistHandler}
+                disabled={props.isLoading}
               >
                 <Delete />
               </IconButton>
             </Typography>
-            <AddItemForm onAddItem={addTask} label="New task title" />
+            <AddItemForm
+              onAddItem={addTask}
+              label="New task title"
+              disabled={props.isLoading}
+            />
             <List sx={{ mt: 2, mb: 2 }}>
               {filteredTasks.map((task, i, tasks) => (
                 <div key={task.id}>
                   <Task
-                    id={task.id}
-                    status={task.status}
-                    title={task.title}
+                    {...task}
                     changeTaskStatus={changeTaskStatus}
                     changeTaskTitle={changeTaskTitle}
                     removeTask={removeTask}

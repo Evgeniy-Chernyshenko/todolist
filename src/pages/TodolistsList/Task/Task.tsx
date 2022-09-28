@@ -4,11 +4,9 @@ import { Box } from "@mui/system";
 import { memo } from "react";
 import { TaskStatuses } from "../../../api/todolists-api";
 import { Editable } from "../../../components/Editable/Editable";
+import { TaskDomainType } from "../../../store/tasks-reducer";
 
-type PropsType = {
-  id: string;
-  status: TaskStatuses;
-  title: string;
+type PropsType = TaskDomainType & {
   removeTask: (taskId: string) => void;
   changeTaskStatus: (status: TaskStatuses, id: string) => void;
   changeTaskTitle: (title: string, id: string) => void;
@@ -42,15 +40,18 @@ export const Task = memo((props: PropsType) => {
               props.id
             )
           }
+          disabled={props.isLoading}
         />
         <Editable
           title={props.title}
           onChange={(title) => props.changeTaskTitle(title, props.id)}
+          disabled={props.isLoading}
         />
       </Box>
       <IconButton
         aria-label="delete task"
         onClick={() => props.removeTask(props.id)}
+        disabled={props.isLoading}
       >
         <DeleteOutline />
       </IconButton>

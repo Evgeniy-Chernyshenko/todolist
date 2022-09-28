@@ -18,6 +18,7 @@ beforeEach(() => {
       filter: "all",
       addedDate: "",
       order: 0,
+      isLoading: false,
     },
     {
       id: todolist2Id,
@@ -25,6 +26,7 @@ beforeEach(() => {
       filter: "all",
       addedDate: "",
       order: 0,
+      isLoading: false,
     },
   ];
 });
@@ -74,4 +76,14 @@ test("todolist filter should be changed", () => {
 
   expect(endState[0].filter).toBe("all");
   expect(endState[1].filter).toBe(filter);
+});
+
+test("todolist isLoading should be changed", () => {
+  const endState = todolistsReducer(
+    startState,
+    todolistsActions.setIsLoading(todolist2Id, true)
+  );
+
+  expect(endState[0].isLoading).toBe(false);
+  expect(endState[1].isLoading).toBe(true);
 });

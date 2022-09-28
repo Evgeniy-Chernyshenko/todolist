@@ -27,14 +27,7 @@ export const TodolistsList = () => {
       </Grid>
 
       {todolists.map((todolist) => {
-        return (
-          <Todolist
-            key={todolist.id}
-            id={todolist.id}
-            title={todolist.title}
-            filter={todolist.filter}
-          />
-        );
+        return <Todolist key={todolist.id} {...todolist} />;
       })}
     </>
   );

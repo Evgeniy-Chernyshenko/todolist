@@ -23,6 +23,7 @@ beforeEach(() => {
       filter: "all",
       addedDate: "",
       order: 0,
+      isLoading: false,
     },
     {
       id: todolist2Id,
@@ -30,6 +31,7 @@ beforeEach(() => {
       filter: "all",
       addedDate: "",
       order: 0,
+      isLoading: false,
     },
   ];
 });
@@ -49,6 +51,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -61,6 +64,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId3",
@@ -73,6 +77,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
     [todolist2Id]: [
@@ -87,6 +92,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -99,6 +105,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
   };

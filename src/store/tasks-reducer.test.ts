@@ -16,6 +16,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -28,6 +29,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId3",
@@ -40,6 +42,7 @@ beforeEach(() => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
     todolistId2: [
@@ -53,7 +56,8 @@ beforeEach(() => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -65,7 +69,8 @@ beforeEach(() => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
     ],
   };
@@ -90,6 +95,7 @@ test("correct task should be deleted from correct array", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId3",
@@ -102,6 +108,7 @@ test("correct task should be deleted from correct array", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
     todolistId2: [
@@ -115,7 +122,8 @@ test("correct task should be deleted from correct array", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -127,7 +135,8 @@ test("correct task should be deleted from correct array", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
     ],
   });
@@ -182,6 +191,7 @@ test("status of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -194,6 +204,7 @@ test("status of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId3",
@@ -206,6 +217,7 @@ test("status of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
     todolistId2: [
@@ -219,7 +231,8 @@ test("status of specified task should be changed", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -231,7 +244,8 @@ test("status of specified task should be changed", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
     ],
   });
@@ -263,6 +277,7 @@ test("title of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -275,6 +290,7 @@ test("title of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
       {
         id: "taskId3",
@@ -287,6 +303,7 @@ test("title of specified task should be changed", () => {
         priority: TaskPriorities.Low,
         startDate: "",
         todoListId: "todolistId1",
+        isLoading: false,
       },
     ],
     todolistId2: [
@@ -300,7 +317,8 @@ test("title of specified task should be changed", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
       {
         id: "taskId2",
@@ -312,7 +330,8 @@ test("title of specified task should be changed", () => {
         order: 0,
         priority: TaskPriorities.Low,
         startDate: "",
-        todoListId: "todolistId1",
+        todoListId: "todolistId2",
+        isLoading: false,
       },
     ],
   });
@@ -326,4 +345,17 @@ test("tasks set should be correct", () => {
 
   expect(endState.todolistId1).toHaveLength(3);
   expect(endState.todolistId2).toHaveLength(0);
+});
+
+test("task isLoading set should be correct", () => {
+  const endState = tasksReducer(
+    startState,
+    tasksActions.setIsLoading("todolistId2", "taskId2", true)
+  );
+
+  expect(endState.todolistId1[0].isLoading).toBe(false);
+  expect(endState.todolistId1[1].isLoading).toBe(false);
+  expect(endState.todolistId1[2].isLoading).toBe(false);
+  expect(endState.todolistId2[0].isLoading).toBe(false);
+  expect(endState.todolistId2[1].isLoading).toBe(true);
 });

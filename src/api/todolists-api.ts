@@ -1,6 +1,6 @@
 import { client } from "./client";
 
-type ResponseType1<D = {}> = {
+export type ResponseType1<D = {}> = {
   data: D;
   messages: string[];
   fieldsErrors: string[];

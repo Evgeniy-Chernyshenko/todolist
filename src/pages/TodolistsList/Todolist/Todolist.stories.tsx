@@ -1,7 +1,7 @@
 import { ComponentStory, ComponentMeta } from "@storybook/react";
 import { useSelector } from "react-redux";
 import { ReduxStoreProviderDecorator } from "../../../store/ReduxStoreProviderDecorator";
-import { AppStateType } from "../../../store/store";
+import { RootStateType } from "../../../store/store";
 import { Todolist } from "./Todolist";
 
 export default {
@@ -11,11 +11,11 @@ export default {
 } as ComponentMeta<typeof Todolist>;
 
 const TodolistWithRedux = () => {
-  const todolist = useSelector<AppStateType, AppStateType["todolists"][0]>(
+  const todolist = useSelector<RootStateType, RootStateType["todolists"][0]>(
     (state) =>
       state.todolists.find(
         ({ id }) => id === "todolist1Id"
-      ) as AppStateType["todolists"][0]
+      ) as RootStateType["todolists"][0]
   );
 
   return <Todolist {...todolist} />;

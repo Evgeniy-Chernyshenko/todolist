@@ -1,15 +1,18 @@
 import { todolistsAPI, TodolistType } from "../api/todolists-api";
-import { AppThunk } from "./store";
+import {
+  handleServerAppError,
+  handleServerNetworkError,
+} from "../utils/error-utils";
+import { appActions } from "./app-reducer";
+import { AppThunk, InferActionTypes } from "./store";
 
-type ActionKeys = keyof typeof todolistsActions;
-export type TodolistActionType = ReturnType<
-  typeof todolistsActions[ActionKeys]
->;
+export type TodolistActionType = InferActionTypes<typeof todolistsActions>;
 
 export type FilterValuesType = "all" | "active" | "completed";
 
 export type TodolistDomainType = TodolistType & {
   filter: FilterValuesType;
+  isLoading: boolean;
 };
 
 const initialState: TodolistDomainType[] = [];
@@ -28,6 +31,7 @@ export const todolistsReducer = (
         {
           ...action.todolist,
           filter: "all",
+          isLoading: false,
         },
         ...state,
       ];
@@ -46,7 +50,17 @@ export const todolistsReducer = (
     }
 
     case "SET_TODOLISTS": {
-      return action.todolists.map((v) => ({ ...v, filter: "all" }));
+      return action.todolists.map((v) => ({
+        ...v,
+        filter: "all",
+        isLoading: false,
+      }));
+    }
+
+    case "TODOLISTS/SET_IS_LOADING": {
+      return state.map((v) =>
+        v.id === action.id ? { ...v, isLoading: action.isLoading } : v
+      );
     }
 
     default: {
@@ -75,32 +89,79 @@ export const todolistsActions = {
     type: "SET_TODOLISTS" as const,
     todolists,
   }),
+  setIsLoading: (id: string, isLoading: boolean) => ({
+    type: "TODOLISTS/SET_IS_LOADING" as const,
+    id,
+    isLoading,
+  }),
 };
 
 export const todolistsThunks = {
-  setTodolists: (): AppThunk => (dispatch) => {
-    todolistsAPI
-      .getTodolists()
-      .then((responseData) =>
-        dispatch(todolistsActions.setTodolists(responseData))
-      );
+  setTodolists: (): AppThunk => async (dispatch) => {
+    dispatch(appActions.setIsLoading(true));
+
+    try {
+      const responseData = await todolistsAPI.getTodolists();
+      dispatch(todolistsActions.setTodolists(responseData));
+    } catch (error) {
+      handleServerNetworkError(error, dispatch);
+    } finally {
+      dispatch(appActions.setIsLoading(false));
+    }
   },
-  removeTodolists:
+  removeTodolist:
     (id: string): AppThunk =>
     async (dispatch) => {
-      await todolistsAPI.deleteTodolist(id);
-      dispatch(todolistsActions.removeTodolist(id));
+      dispatch(appActions.setIsLoading(true));
+      dispatch(todolistsActions.setIsLoading(id, true));
+
+      try {
+        const responseData = await todolistsAPI.deleteTodolist(id);
+
+        responseData.resultCode !== 0
+          ? handleServerAppError(responseData, dispatch)
+          : dispatch(todolistsActions.removeTodolist(id));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+        dispatch(todolistsActions.setIsLoading(id, false));
+      }
     },
   addTodolists:
     (title: string): AppThunk =>
     async (dispatch) => {
-      const responseData = await todolistsAPI.createTodolist(title);
-      dispatch(todolistsActions.addTodolist(responseData.data.item));
+      dispatch(appActions.setIsLoading(true));
+
+      try {
+        const responseData = await todolistsAPI.createTodolist(title);
+
+        responseData.resultCode !== 0
+          ? handleServerAppError(responseData, dispatch)
+          : dispatch(todolistsActions.addTodolist(responseData.data.item));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
     },
   changeTodolistTitle:
     (id: string, title: string): AppThunk =>
     async (dispatch) => {
-      await todolistsAPI.updateTodolist(id, title);
-      dispatch(todolistsActions.changeTodolistTitle(id, title));
+      dispatch(appActions.setIsLoading(true));
+      dispatch(todolistsActions.setIsLoading(id, true));
+
+      try {
+        const responseData = await todolistsAPI.updateTodolist(id, title);
+
+        responseData.resultCode !== 0
+          ? handleServerAppError(responseData, dispatch)
+          : dispatch(todolistsActions.changeTodolistTitle(id, title));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+        dispatch(todolistsActions.setIsLoading(id, false));
+      }
     },
 };

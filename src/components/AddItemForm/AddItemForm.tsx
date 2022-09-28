@@ -5,6 +5,7 @@ import { ChangeEvent, KeyboardEvent, useState, memo } from "react";
 type PropsType = {
   onAddItem: (value: string) => void;
   label: string;
+  disabled?: boolean;
 };
 
 export const AddItemForm = memo((props: PropsType) => {
@@ -56,11 +57,13 @@ export const AddItemForm = memo((props: PropsType) => {
         error={!!error}
         helperText={error ? error : ""}
         fullWidth
+        disabled={props.disabled}
       />
       <IconButton
         aria-label="add task"
         onClick={onButtonClickHandler}
         onBlur={onBlurHandler}
+        disabled={props.disabled}
       >
         <Add />
       </IconButton>
