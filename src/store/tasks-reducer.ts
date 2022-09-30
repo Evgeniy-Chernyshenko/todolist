@@ -10,14 +10,15 @@ import {
   handleServerNetworkError,
 } from "../utils/error-utils";
 import { appActions } from "./app-reducer";
-import { AppThunks, InferActionTypes } from "./store";
+import { AppThunk, InferActionTypes } from "./store";
 import { todolistsActions } from "./todolists-reducer";
 
 export type TasksActionType =
   | InferActionTypes<typeof tasksActions>
   | ReturnType<typeof todolistsActions.removeTodolist>
   | ReturnType<typeof todolistsActions.addTodolist>
-  | ReturnType<typeof todolistsActions.setTodolists>;
+  | ReturnType<typeof todolistsActions.setTodolists>
+  | ReturnType<typeof todolistsActions.clearTodolists>;
 
 export type TaskDomainType = TaskType & { isLoading: boolean };
 
@@ -81,6 +82,10 @@ export const tasksReducer = (
       return action.todolists.reduce((a, c) => ({ ...a, [c.id]: [] }), {});
     }
 
+    case "CLEAR_TODOLISTS": {
+      return {};
+    }
+
     case "SET_TASKS": {
       return {
         ...state,
@@ -138,63 +143,69 @@ export const tasksActions = {
   }),
 };
 
-export const tasksThunks: AppThunks = {
-  setTasks: (todolistId: string) => async (dispatch) => {
-    dispatch(appActions.setIsLoading(true));
+export const tasksThunks = {
+  setTasks:
+    (todolistId: string): AppThunk<Promise<void>> =>
+    async (dispatch) => {
+      dispatch(appActions.setIsLoading(true));
 
-    try {
-      const responseData = await todolistsAPI.getTasks(todolistId);
+      try {
+        const responseData = await todolistsAPI.getTasks(todolistId);
 
-      dispatch(tasksActions.setTasks(responseData.items, todolistId));
-    } catch (error) {
-      handleServerNetworkError(error, dispatch);
-    } finally {
+        dispatch(tasksActions.setTasks(responseData.items, todolistId));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
       dispatch(appActions.setIsLoading(false));
-    }
+    },
+  removeTask:
+    (id: string, todolistId: string): AppThunk =>
+    async (dispatch) => {
+      dispatch(appActions.setIsLoading(true));
+      dispatch(todolistsActions.setIsLoading(todolistId, true));
+      dispatch(tasksActions.setIsLoading(todolistId, id, true));
 
-    dispatch(appActions.setIsLoading(false));
-  },
-  removeTask: (id: string, todolistId: string) => async (dispatch) => {
-    dispatch(appActions.setIsLoading(true));
-    dispatch(todolistsActions.setIsLoading(todolistId, true));
-    dispatch(tasksActions.setIsLoading(todolistId, id, true));
+      try {
+        const responseData = await todolistsAPI.deleteTask(todolistId, id);
 
-    try {
-      const responseData = await todolistsAPI.deleteTask(todolistId, id);
+        responseData.resultCode !== 0
+          ? handleServerAppError(responseData, dispatch)
+          : dispatch(tasksActions.removeTask(id, todolistId));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+        dispatch(todolistsActions.setIsLoading(todolistId, false));
+      }
+    },
+  addTask:
+    (title: string, todolistId: string): AppThunk =>
+    async (dispatch) => {
+      dispatch(appActions.setIsLoading(true));
+      dispatch(todolistsActions.setIsLoading(todolistId, true));
 
-      responseData.resultCode !== 0
-        ? handleServerAppError(responseData, dispatch)
-        : dispatch(tasksActions.removeTask(id, todolistId));
-    } catch (error) {
-      handleServerNetworkError(error, dispatch);
-    } finally {
-      dispatch(appActions.setIsLoading(false));
-      dispatch(todolistsActions.setIsLoading(todolistId, false));
-    }
-  },
-  addTask: (title: string, todolistId: string) => async (dispatch) => {
-    dispatch(appActions.setIsLoading(true));
-    dispatch(todolistsActions.setIsLoading(todolistId, true));
+      try {
+        const responseData = await todolistsAPI.createTask(todolistId, title);
 
-    try {
-      const responseData = await todolistsAPI.createTask(todolistId, title);
-
-      responseData.resultCode !== 0
-        ? handleServerAppError(responseData, dispatch)
-        : dispatch(tasksActions.addTask(responseData.data.item));
-    } catch (error) {
-      handleServerNetworkError(error, dispatch);
-    } finally {
-      dispatch(appActions.setIsLoading(false));
-      dispatch(todolistsActions.setIsLoading(todolistId, false));
-    }
-  },
+        responseData.resultCode !== 0
+          ? handleServerAppError(responseData, dispatch)
+          : dispatch(tasksActions.addTask(responseData.data.item));
+      } catch (error) {
+        handleServerNetworkError(error, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+        dispatch(todolistsActions.setIsLoading(todolistId, false));
+      }
+    },
   updateTask:
     (
       todolistId: string,
       taskId: string,
       domainModel: UpdateTaskDomainModelType
-    ) =>
+    ): AppThunk =>
     async (dispatch, getState) => {
       dispatch(appActions.setIsLoading(true));
       dispatch(todolistsActions.setIsLoading(todolistId, true));

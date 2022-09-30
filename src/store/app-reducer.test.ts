@@ -5,6 +5,7 @@ beforeEach(() => {
   startState = {
     errorMessage: null,
     isLoading: false,
+    isInitialize: false,
   };
 });
 

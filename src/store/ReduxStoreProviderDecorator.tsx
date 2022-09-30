@@ -88,7 +88,12 @@ const initialGlobalState: RootStateType = {
       },
     ],
   },
-  app: { errorMessage: null, isLoading: false },
+  app: { isInitialize: false, errorMessage: null, isLoading: false },
+  auth: {
+    id: null,
+    email: null,
+    login: null,
+  },
 };
 
 export const decoratorStore = legacy_createStore(

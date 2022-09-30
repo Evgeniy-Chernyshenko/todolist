@@ -13,8 +13,6 @@ type PropsType = TaskDomainType & {
 };
 
 export const Task = memo((props: PropsType) => {
-  console.log("Task");
-
   return (
     <ListItem
       key={props.id}

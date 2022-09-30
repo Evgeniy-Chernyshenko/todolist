@@ -51,6 +51,13 @@ export type UpdateTaskApiModelType = {
   deadline: null | string;
 };
 
+export type LoginParamsType = {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+  captcha?: string;
+};
+
 export const todolistsAPI = {
   getTodolists: async () => {
     return (await client.get<TodolistType[]>("todo-lists")).data;
@@ -102,5 +109,20 @@ export const todolistsAPI = {
         `todo-lists/${todolistId}/tasks/${taskId}`
       )
     ).data;
+  },
+  login: async (params: LoginParamsType) => {
+    return (
+      await client.post<ResponseType1<{ userId: number }>>("auth/login", params)
+    ).data;
+  },
+  me: async () => {
+    return (
+      await client.get<
+        ResponseType1<{ id: number; email: string; login: string }>
+      >("auth/me")
+    ).data;
+  },
+  logout: async () => {
+    return (await client.delete<ResponseType1>("auth/login")).data;
   },
 };

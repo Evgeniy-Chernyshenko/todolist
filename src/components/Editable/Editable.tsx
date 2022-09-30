@@ -8,8 +8,6 @@ type PropsType = {
 };
 
 export const Editable = memo((props: PropsType) => {
-  console.log("Editable", props);
-
   const [value, setValue] = useState(props.title);
   const [isEditMode, setIsEditMode] = useState(false);
 

@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Unstable_Grid2";
-import { memo, useCallback, useMemo, useEffect } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { TaskStatuses } from "../../../api/todolists-api";
 import { AddItemForm } from "../../../components/AddItemForm/AddItemForm";
 import { Editable } from "../../../components/Editable/Editable";
@@ -27,14 +27,8 @@ import { Task } from "../Task/Task";
 type PropsType = TodolistDomainType;
 
 export const Todolist = memo((props: PropsType) => {
-  console.log("Todolist", props);
-
   const tasks = useAppSelector((state) => state.tasks[props.id]);
   const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(tasksThunks.setTasks(props.id));
-  }, [dispatch, props.id]);
 
   const removeTask = useCallback(
     (taskId: string) => {

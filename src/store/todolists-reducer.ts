@@ -5,6 +5,7 @@ import {
 } from "../utils/error-utils";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
+import { tasksThunks } from "./tasks-reducer";
 
 export type TodolistActionType = InferActionTypes<typeof todolistsActions>;
 
@@ -57,6 +58,10 @@ export const todolistsReducer = (
       }));
     }
 
+    case "CLEAR_TODOLISTS": {
+      return [];
+    }
+
     case "TODOLISTS/SET_IS_LOADING": {
       return state.map((v) =>
         v.id === action.id ? { ...v, isLoading: action.isLoading } : v
@@ -89,6 +94,9 @@ export const todolistsActions = {
     type: "SET_TODOLISTS" as const,
     todolists,
   }),
+  clearTodolists: () => ({
+    type: "CLEAR_TODOLISTS" as const,
+  }),
   setIsLoading: (id: string, isLoading: boolean) => ({
     type: "TODOLISTS/SET_IS_LOADING" as const,
     id,
@@ -103,6 +111,9 @@ export const todolistsThunks = {
     try {
       const responseData = await todolistsAPI.getTodolists();
       dispatch(todolistsActions.setTodolists(responseData));
+      await Promise.all(
+        responseData.map((v) => dispatch(tasksThunks.setTasks(v.id)))
+      );
     } catch (error) {
       handleServerNetworkError(error, dispatch);
     } finally {
