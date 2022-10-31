@@ -1,3 +1,4 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { authThunks } from "./auth-reducer";
 import { AppThunks, InferActionTypes } from "./store";
 
@@ -15,41 +16,24 @@ const initialState: AppStateType = {
   errorMessage: null,
 };
 
-export const appReducer = (
-  state = initialState,
-  action: AppActionType
-): AppStateType => {
-  switch (action.type) {
-    case "APP/SET-IS-LOADING": {
-      return { ...state, ...action.payload };
-    }
+const slice = createSlice({
+  initialState,
+  name: "app",
+  reducers: {
+    setIsLoading: (state, action: PayloadAction<boolean>) => {
+      state.isLoading = action.payload;
+    },
+    setErrorMessage: (state, action: PayloadAction<null | string>) => {
+      state.errorMessage = action.payload;
+    },
+    setInitialize: (state) => {
+      state.isInitialize = true;
+    },
+  },
+});
 
-    case "APP/SET-ERROR-MESSAGE": {
-      return { ...state, ...action.payload };
-    }
-
-    case "APP/SET_INITIALIZE": {
-      return { ...state, isInitialize: true };
-    }
-
-    default:
-      return state;
-  }
-};
-
-export const appActions = {
-  setIsLoading: (isLoading: boolean) => ({
-    type: "APP/SET-IS-LOADING" as const,
-    payload: { isLoading },
-  }),
-  setErrorMessage: (errorMessage: null | string) => ({
-    type: "APP/SET-ERROR-MESSAGE" as const,
-    payload: { errorMessage },
-  }),
-  setInitialize: () => ({
-    type: "APP/SET_INITIALIZE" as const,
-  }),
-};
+export const appReducer = slice.reducer;
+export const appActions = slice.actions;
 
 export const appThunks: AppThunks = {
   initialize: () => async (dispatch) => {

@@ -1,3 +1,4 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { LoginParamsType, todolistsAPI } from "../api/todolists-api";
 import {
   handleServerAppError,
@@ -5,8 +6,6 @@ import {
 } from "../utils/error-utils";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
-
-export type AuthActionType = InferActionTypes<typeof authActions>;
 
 export type AuthStateType = {
   id: null | number;
@@ -20,33 +19,27 @@ const initialState: AuthStateType = {
   login: null,
 };
 
-export const authReducer = (
-  state = initialState,
-  action: AuthActionType
-): AuthStateType => {
-  switch (action.type) {
-    case "SET_AUTH": {
-      return { ...state, ...action.payload };
-    }
+export type AuthActionType = InferActionTypes<typeof authActions>;
 
-    case "LOGOUT": {
-      return { id: null, email: null, login: null };
-    }
+const slice = createSlice({
+  initialState,
+  name: "auth",
+  reducers: {
+    setAuth: (state, action: PayloadAction<AuthStateType>) => {
+      state.id = action.payload.id;
+      state.email = action.payload.email;
+      state.login = action.payload.login;
+    },
+    logout: (state) => {
+      state.id = null;
+      state.email = null;
+      state.login = null;
+    },
+  },
+});
 
-    default:
-      return state;
-  }
-};
-
-export const authActions = {
-  setAuth: (payload: { id: number; email: string; login: string }) => ({
-    type: "SET_AUTH" as const,
-    payload,
-  }),
-  logout: () => ({
-    type: "LOGOUT" as const,
-  }),
-};
+export const authReducer = slice.reducer;
+const authActions = slice.actions;
 
 export const authThunks = {
   login:

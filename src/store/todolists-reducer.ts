@@ -1,3 +1,4 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { todolistsAPI, TodolistType } from "../api/todolists-api";
 import {
   handleServerAppError,
@@ -18,91 +19,61 @@ export type TodolistDomainType = TodolistType & {
 
 const initialState: TodolistDomainType[] = [];
 
-export const todolistsReducer = (
-  state = initialState,
-  action: TodolistActionType
-): TodolistDomainType[] => {
-  switch (action.type) {
-    case "REMOVE_TODOLIST": {
-      return state.filter((v) => v.id !== action.id);
-    }
-
-    case "ADD_TODOLIST": {
-      return [
-        {
-          ...action.todolist,
-          filter: "all",
-          isLoading: false,
-        },
-        ...state,
-      ];
-    }
-
-    case "CHANGE_TODOLIST_TITLE": {
+const slice = createSlice({
+  initialState,
+  name: "todolists",
+  reducers: {
+    removeTodolist: (state, action: PayloadAction<string>) => {
+      return state.filter((v) => v.id !== action.payload);
+    },
+    addTodolist: (state, action: PayloadAction<TodolistType>) => {
+      state.unshift({
+        ...action.payload,
+        filter: "all",
+        isLoading: false,
+      });
+    },
+    changeTodolistTitle: (
+      state,
+      action: PayloadAction<{ id: string; title: string }>
+    ) => {
       return state.map((v) =>
-        v.id === action.id ? { ...v, title: action.title } : v
+        v.id === action.payload.id ? { ...v, title: action.payload.title } : v
       );
-    }
-
-    case "CHANGE_TODOLIST_FILTER": {
+    },
+    changeTodolistFilter: (
+      state,
+      action: PayloadAction<{ id: string; filter: FilterValuesType }>
+    ) => {
       return state.map((v) =>
-        v.id === action.id ? { ...v, filter: action.filter } : v
+        v.id === action.payload.id ? { ...v, filter: action.payload.filter } : v
       );
-    }
-
-    case "SET_TODOLISTS": {
-      return action.todolists.map((v) => ({
+    },
+    setTodolists: (state, action: PayloadAction<TodolistType[]>) => {
+      return action.payload.map((v) => ({
         ...v,
         filter: "all",
         isLoading: false,
       }));
-    }
-
-    case "CLEAR_TODOLISTS": {
+    },
+    clearTodolists: () => {
       return [];
-    }
-
-    case "TODOLISTS/SET_IS_LOADING": {
+    },
+    setIsLoading: (
+      state,
+      action: PayloadAction<{ id: string; isLoading: boolean }>
+    ) => {
       return state.map((v) =>
-        v.id === action.id ? { ...v, isLoading: action.isLoading } : v
+        v.id === action.payload.id
+          ? { ...v, isLoading: action.payload.isLoading }
+          : v
       );
-    }
+    },
+  },
+});
 
-    default: {
-      return state;
-    }
-  }
-};
-
-export const todolistsActions = {
-  removeTodolist: (id: string) => ({ type: "REMOVE_TODOLIST" as const, id }),
-  addTodolist: (todolist: TodolistType) => ({
-    type: "ADD_TODOLIST" as const,
-    todolist,
-  }),
-  changeTodolistTitle: (id: string, title: string) => ({
-    type: "CHANGE_TODOLIST_TITLE" as const,
-    id,
-    title,
-  }),
-  changeTodolistFilter: (id: string, filter: FilterValuesType) => ({
-    type: "CHANGE_TODOLIST_FILTER" as const,
-    id,
-    filter,
-  }),
-  setTodolists: (todolists: TodolistType[]) => ({
-    type: "SET_TODOLISTS" as const,
-    todolists,
-  }),
-  clearTodolists: () => ({
-    type: "CLEAR_TODOLISTS" as const,
-  }),
-  setIsLoading: (id: string, isLoading: boolean) => ({
-    type: "TODOLISTS/SET_IS_LOADING" as const,
-    id,
-    isLoading,
-  }),
-};
+export const todolistsReducer = slice.reducer;
+export const todolistsActions = slice.actions;
 
 export const todolistsThunks = {
   setTodolists: (): AppThunk => async (dispatch) => {
@@ -124,7 +95,7 @@ export const todolistsThunks = {
     (id: string): AppThunk =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
-      dispatch(todolistsActions.setIsLoading(id, true));
+      dispatch(todolistsActions.setIsLoading({ id, isLoading: true }));
 
       try {
         const responseData = await todolistsAPI.deleteTodolist(id);
@@ -136,7 +107,7 @@ export const todolistsThunks = {
         handleServerNetworkError(error, dispatch);
       } finally {
         dispatch(appActions.setIsLoading(false));
-        dispatch(todolistsActions.setIsLoading(id, false));
+        dispatch(todolistsActions.setIsLoading({ id, isLoading: false }));
       }
     },
   addTodolists:
@@ -160,19 +131,19 @@ export const todolistsThunks = {
     (id: string, title: string): AppThunk =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
-      dispatch(todolistsActions.setIsLoading(id, true));
+      dispatch(todolistsActions.setIsLoading({ id, isLoading: true }));
 
       try {
         const responseData = await todolistsAPI.updateTodolist(id, title);
 
         responseData.resultCode !== 0
           ? handleServerAppError(responseData, dispatch)
-          : dispatch(todolistsActions.changeTodolistTitle(id, title));
+          : dispatch(todolistsActions.changeTodolistTitle({ id, title }));
       } catch (error) {
         handleServerNetworkError(error, dispatch);
       } finally {
         dispatch(appActions.setIsLoading(false));
-        dispatch(todolistsActions.setIsLoading(id, false));
+        dispatch(todolistsActions.setIsLoading({ id, isLoading: false }));
       }
     },
 };
