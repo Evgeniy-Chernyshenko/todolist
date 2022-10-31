@@ -31,6 +31,8 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 
 export type AppThunks = { [key: string]: (...args: any[]) => AppThunk };
 
+export type RootReducerType = typeof rootReducer;
+
 const rootReducer = combineReducers({
   tasks: tasksReducer,
   todolists: todolistsReducer,

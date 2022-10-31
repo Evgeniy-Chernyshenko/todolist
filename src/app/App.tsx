@@ -18,7 +18,7 @@ import "./App.css";
 import { TodolistsList } from "../pages/TodolistsList/TodolistsList";
 import { ErrorSnackbar } from "../components/ErrorSnackbar/ErrorSnackbar";
 import { LoadingProgress } from "../components/LoadingProgress/LoadingProgress";
-import { BrowserRouter, NavLink, Route, Routes } from "react-router-dom";
+import { NavLink, Route, Routes } from "react-router-dom";
 import { Login } from "../pages/Login/Login";
 import { NotFound } from "../pages/NotFound/NotFound";
 import { useAppDispatch, useAppSelector } from "../hooks";
@@ -65,63 +65,61 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ mr: 2 }}
+          >
+            <Menu />
+          </IconButton>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography
+              variant="h6"
+              component={NavLink}
+              to="/"
+              sx={{ textDecoration: "none", color: "inherit" }}
             >
-              <Menu />
-            </IconButton>
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography
-                variant="h6"
-                component={NavLink}
-                to="/"
-                sx={{ textDecoration: "none", color: "inherit" }}
+              Todolist app
+            </Typography>
+          </Box>
+          {auth.login !== null && (
+            <>
+              <Avatar sx={{ bgcolor: deepOrange[500], marginRight: "10px" }}>
+                {auth.login[0].toLocaleUpperCase()}
+              </Avatar>
+              <Button
+                color="inherit"
+                onClick={handleLogout}
+                sx={{ marginRight: "10px" }}
               >
-                Todolist app
-              </Typography>
-            </Box>
-            {auth.login !== null && (
-              <>
-                <Avatar sx={{ bgcolor: deepOrange[500], marginRight: "10px" }}>
-                  {auth.login[0].toLocaleUpperCase()}
-                </Avatar>
-                <Button
-                  color="inherit"
-                  onClick={handleLogout}
-                  sx={{ marginRight: "10px" }}
-                >
-                  Logout
-                </Button>
-              </>
-            )}
-            <IconButton
-              color="inherit"
-              onClick={() => setIsDarkMode(!isDarkMode)}
-            >
-              {isDarkMode ? <LightMode /> : <DarkMode />}
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <LoadingProgress />
-        <Container sx={{ pt: 4 }}>
-          <Routes>
-            <Route path="/" element={<TodolistsList />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Container>
-        <ErrorSnackbar />
-      </ThemeProvider>
-    </BrowserRouter>
+                Logout
+              </Button>
+            </>
+          )}
+          <IconButton
+            color="inherit"
+            onClick={() => setIsDarkMode(!isDarkMode)}
+          >
+            {isDarkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <LoadingProgress />
+      <Container sx={{ pt: 4 }}>
+        <Routes>
+          <Route path="/" element={<TodolistsList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Container>
+      <ErrorSnackbar />
+    </ThemeProvider>
   );
 }
 

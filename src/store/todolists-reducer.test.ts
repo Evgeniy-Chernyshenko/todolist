@@ -60,7 +60,10 @@ test("todolist should be added", () => {
 test("todolist title should be changed", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.changeTodolistTitle(todolist2Id, "New todolist")
+    todolistsActions.changeTodolistTitle({
+      id: todolist2Id,
+      title: "New todolist",
+    })
   );
 
   expect(endState[0].title).toBe("What to learn");
@@ -71,7 +74,7 @@ test("todolist filter should be changed", () => {
   const filter = "completed";
   const endState = todolistsReducer(
     startState,
-    todolistsActions.changeTodolistFilter(todolist2Id, filter)
+    todolistsActions.changeTodolistFilter({ filter, id: todolist2Id })
   );
 
   expect(endState[0].filter).toBe("all");
@@ -81,7 +84,7 @@ test("todolist filter should be changed", () => {
 test("todolist isLoading should be changed", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.setIsLoading(todolist2Id, true)
+    todolistsActions.setIsLoading({ id: todolist2Id, isLoading: true })
   );
 
   expect(endState[0].isLoading).toBe(false);
