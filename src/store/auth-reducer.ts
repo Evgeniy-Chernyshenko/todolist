@@ -1,11 +1,11 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { LoginParamsType, todolistsAPI } from "../api/todolists-api";
 import {
   handleServerAppError,
   handleServerNetworkError,
 } from "../utils/error-utils";
 import { appActions } from "./app-reducer";
-import { AppThunk, InferActionTypes } from "./store";
+import { AppDispatch } from "./store";
 
 export type AuthStateType = {
   id: null | number;
@@ -19,32 +19,28 @@ const initialState: AuthStateType = {
   login: null,
 };
 
-export type AuthActionType = InferActionTypes<typeof authActions>;
-
 const slice = createSlice({
   initialState,
   name: "auth",
-  reducers: {
-    setAuth: (state, action: PayloadAction<AuthStateType>) => {
+  reducers: {},
+  extraReducers(builder) {
+    builder.addCase(authThunks.setAuth.fulfilled, (state, action) => {
       state.id = action.payload.id;
       state.email = action.payload.email;
       state.login = action.payload.login;
-    },
-    logout: (state) => {
+    });
+    builder.addCase(authThunks.logout.fulfilled, (state, action) => {
       state.id = null;
       state.email = null;
       state.login = null;
-    },
+    });
   },
 });
 
-export const authReducer = slice.reducer;
-const authActions = slice.actions;
-
 export const authThunks = {
-  login:
-    (params: LoginParamsType): AppThunk =>
-    async (dispatch) => {
+  login: createAsyncThunk<void, LoginParamsType, { dispatch: AppDispatch }>(
+    "auth/login",
+    async (params, { dispatch }) => {
       dispatch(appActions.setIsLoading(true));
 
       try {
@@ -60,26 +56,50 @@ export const authThunks = {
       } finally {
         dispatch(appActions.setIsLoading(false));
       }
+    }
+  ),
+  setAuth: createAsyncThunk<
+    {
+      id: number;
+      email: string;
+      login: string;
     },
-  setAuth: (): AppThunk<Promise<void>> => async (dispatch) => {
+    void,
+    { dispatch: AppDispatch; rejectValue: void }
+  >("auth/setAuth", async (_, { dispatch, rejectWithValue }) => {
     try {
       const responseData = await todolistsAPI.me();
 
-      responseData.resultCode === 0 &&
-        dispatch(authActions.setAuth(responseData.data));
+      if (responseData.resultCode === 0) {
+        return responseData.data;
+      }
+
+      return rejectWithValue();
     } catch (error) {
       handleServerNetworkError(error, dispatch);
+
+      return rejectWithValue();
     }
-  },
-  logout: (): AppThunk => async (dispatch) => {
+  }),
+  logout: createAsyncThunk<
+    void,
+    void,
+    { dispatch: AppDispatch; rejectValue: void }
+  >("auth/logout", async (_, { dispatch, rejectWithValue }) => {
     try {
       const responseData = await todolistsAPI.logout();
 
-      responseData.resultCode !== 0
-        ? handleServerAppError(responseData, dispatch)
-        : dispatch(authActions.logout());
+      if (responseData.resultCode !== 0) {
+        handleServerAppError(responseData, dispatch);
+
+        return rejectWithValue();
+      }
     } catch (error) {
       handleServerNetworkError(error, dispatch);
+
+      return rejectWithValue();
     }
-  },
+  }),
 };
+
+export const authReducer = slice.reducer;

@@ -3,6 +3,7 @@ import {
   TodolistDomainType,
   todolistsActions,
   todolistsReducer,
+  todolistsThunks,
 } from "./todolists-reducer";
 
 let todolist1Id = v1();
@@ -34,7 +35,11 @@ beforeEach(() => {
 test("todolist should be removed", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.removeTodolist(todolist1Id)
+    todolistsThunks.removeTodolist.fulfilled(
+      todolist1Id,
+      "requestId",
+      todolist1Id
+    )
   );
 
   expect(endState).toHaveLength(1);
@@ -44,12 +49,16 @@ test("todolist should be removed", () => {
 test("todolist should be added", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.addTodolist({
-      addedDate: "",
-      id: "new id",
-      order: 0,
-      title: "New todolist",
-    })
+    todolistsThunks.addTodolist.fulfilled(
+      {
+        addedDate: "",
+        id: "new id",
+        order: 0,
+        title: "New todolist",
+      },
+      "requestId",
+      "New todolist"
+    )
   );
 
   expect(endState).toHaveLength(3);
@@ -60,10 +69,17 @@ test("todolist should be added", () => {
 test("todolist title should be changed", () => {
   const endState = todolistsReducer(
     startState,
-    todolistsActions.changeTodolistTitle({
-      id: todolist2Id,
-      title: "New todolist",
-    })
+    todolistsThunks.changeTodolistTitle.fulfilled(
+      {
+        id: todolist2Id,
+        title: "New todolist",
+      },
+      "requestId",
+      {
+        id: todolist2Id,
+        title: "New todolist",
+      }
+    )
   );
 
   expect(endState[0].title).toBe("What to learn");

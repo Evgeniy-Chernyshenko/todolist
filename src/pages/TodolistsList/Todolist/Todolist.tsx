@@ -28,29 +28,43 @@ type PropsType = TodolistDomainType;
 
 export const Todolist = memo((props: PropsType) => {
   const tasks = useAppSelector((state) => state.tasks[props.id]);
+
   const dispatch = useAppDispatch();
 
   const removeTask = useCallback(
     (taskId: string) => {
-      dispatch(tasksThunks.removeTask(taskId, props.id));
+      dispatch(tasksThunks.removeTask({ id: taskId, todolistId: props.id }));
     },
     [dispatch, props.id]
   );
 
   const changeTaskStatus = useCallback(
     (status: TaskStatuses, id: string) =>
-      dispatch(tasksThunks.updateTask(props.id, id, { status })),
+      dispatch(
+        tasksThunks.updateTask({
+          domainModel: { status },
+          taskId: id,
+          todolistId: props.id,
+        })
+      ),
     [dispatch, props.id]
   );
 
   const addTask = useCallback(
-    (title: string) => dispatch(tasksThunks.addTask(title, props.id)),
+    (title: string) =>
+      dispatch(tasksThunks.addTask({ title, todolistId: props.id })),
     [dispatch, props.id]
   );
 
   const changeTaskTitle = useCallback(
     (title: string, id: string) =>
-      dispatch(tasksThunks.updateTask(props.id, id, { title })),
+      dispatch(
+        tasksThunks.updateTask({
+          domainModel: { title },
+          taskId: id,
+          todolistId: props.id,
+        })
+      ),
     [dispatch, props.id]
   );
 
@@ -72,7 +86,7 @@ export const Todolist = memo((props: PropsType) => {
 
   const changeTodolistTitle = useCallback(
     (title: string) =>
-      dispatch(todolistsThunks.changeTodolistTitle(props.id, title)),
+      dispatch(todolistsThunks.changeTodolistTitle({ id: props.id, title })),
     [dispatch, props.id]
   );
 

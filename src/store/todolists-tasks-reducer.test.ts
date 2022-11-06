@@ -5,6 +5,7 @@ import {
   todolistsActions,
   todolistsReducer,
   TodolistDomainType,
+  todolistsThunks,
 } from "./todolists-reducer";
 import {
   TaskPriorities,
@@ -112,12 +113,16 @@ beforeEach(() => {
 });
 
 test("ids should be equals", () => {
-  const action = todolistsActions.addTodolist({
-    addedDate: "",
-    id: "new id",
-    order: 0,
-    title: "New todolist",
-  });
+  const action = todolistsThunks.addTodolist.fulfilled(
+    {
+      addedDate: "",
+      id: "new id",
+      order: 0,
+      title: "New todolist",
+    },
+    "requestId",
+    ""
+  );
 
   const endTasksState = tasksReducer(startTasksState, action);
   const endTodolistsState = todolistsReducer(startTodolistState, action);
@@ -131,7 +136,11 @@ test("ids should be equals", () => {
 });
 
 test("property with todolistId should be deleted", () => {
-  const action = todolistsActions.removeTodolist(todolist2Id);
+  const action = todolistsThunks.removeTodolist.fulfilled(
+    todolist2Id,
+    "requestId",
+    todolist2Id
+  );
 
   const endTasksState = tasksReducer(startTasksState, action);
   const endTodolistsState = todolistsReducer(startTodolistState, action);
@@ -142,7 +151,11 @@ test("property with todolistId should be deleted", () => {
 });
 
 test("property with todolistId should be deleted", () => {
-  const action = todolistsActions.removeTodolist(todolist2Id);
+  const action = todolistsThunks.removeTodolist.fulfilled(
+    todolist2Id,
+    "requestId",
+    todolist2Id
+  );
 
   const endTasksState = tasksReducer(startTasksState, action);
   const endTodolistsState = todolistsReducer(startTodolistState, action);

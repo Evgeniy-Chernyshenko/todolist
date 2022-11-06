@@ -1,8 +1,6 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { authThunks } from "./auth-reducer";
-import { AppThunks, InferActionTypes } from "./store";
-
-export type AppActionType = InferActionTypes<typeof appActions>;
+import { AppDispatch } from "./store";
 
 export type AppStateType = {
   isInitialize: boolean;
@@ -26,18 +24,22 @@ const slice = createSlice({
     setErrorMessage: (state, action: PayloadAction<null | string>) => {
       state.errorMessage = action.payload;
     },
-    setInitialize: (state) => {
+  },
+  extraReducers(builder) {
+    builder.addCase(appThunks.initialize.fulfilled, (state, action) => {
       state.isInitialize = true;
-    },
+    });
   },
 });
 
 export const appReducer = slice.reducer;
 export const appActions = slice.actions;
 
-export const appThunks: AppThunks = {
-  initialize: () => async (dispatch) => {
-    await dispatch(authThunks.setAuth());
-    dispatch(appActions.setInitialize());
-  },
+export const appThunks = {
+  initialize: createAsyncThunk<void, void, { dispatch: AppDispatch }>(
+    "auth/initialize",
+    async (_, { dispatch }) => {
+      await dispatch(authThunks.setAuth());
+    }
+  ),
 };
